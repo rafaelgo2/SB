@@ -4,12 +4,12 @@
 
 using namespace std;
 
-void fillFunction(map<string, int> &function){
+void fillFunction(map<string, int> &opCode){
 	function["nome"] = opCode;
 }
 
 int main(int argc, char *argv[]){
-	map<string, int> label, function;
+	map<string, int> label, opCode;
 	fstream fin(argv[1]), fout(argv[2]);
 	int line = 0;	
 	string s;
