@@ -3,6 +3,7 @@
 #include <fstream>
 #include <map>
 #include <bitset>
+#include <cstring>
 
 using namespace std;
 
@@ -37,42 +38,18 @@ void fillOpCodeMap(map<string, int> &opCodeMap){
 }
 
 void fillOpIdMap(map<string, int> &opIdMap){
-	for (int i = 0; i < 255; i++)
-		opIdMap["R" + i] = i;
+    stringstream riStream;
+    string riString;
+	for (int i = 0; i < 8; i++){
+        riStream << 'R' << i;
+        riStream >> riString;
+		opIdMap[riString] = i;
+        riStream.clear();
+	}
+	opIdMap["negOne"]=44;
+	opIdMap["sign"]=46;
+	opIdMap["one"]=48;
 	opIdMap["IO"] = 254;
-}
-
-
-void fillOpTypeMap(int *opTypeMap){
-//0: 11B
-//1: 3R 8B
-	opTypeMap[0] = 0;
-	opTypeMap[1] = 1;
-	opTypeMap[2] = 1;
-	opTypeMap[3] = 2;
-	opTypeMap[4] = 2;
-	opTypeMap[5] = 2;
-	opTypeMap[6] = 2;
-    opTypeMap[7] = 1;
-	opTypeMap[8] = 1;
-	opTypeMap[9] = 1;
-	opTypeMap[10] = 2;
-	opTypeMap[11] = 2;
-	opTypeMap[12] = 2;
-	opTypeMap[13] = 1;
-	opTypeMap[14] = 1;
-	opTypeMap[15] = 1;
-	opTypeMap[16] = 3;
-	opTypeMap[17] = 1;
-	opTypeMap[18] = 1;
-	opTypeMap[19] = 1;
-	opTypeMap[20] = 0;
-	opTypeMap[21] = 1;
-	opTypeMap[22] = 1;
-	opTypeMap[23] = 1;
-	opTypeMap[24] = 3;
-	opTypeMap[25] = 3;
-	opTypeMap[26] = 1;
 }
 
 void begin(ofstream &fout){
@@ -90,10 +67,9 @@ void end(ofstream &fout){
 
 int main(int argc, char *argv[]){
 	map<string, int> labelMap, opCodeMap, opIdMap, memMap;
-	int opTypeMap[27];
+	int opTypeMap[27] = {0, 1, 1, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 1, 1, 1, 3, 1, 1, 1, 0, 1, 1, 1, 3, 3, 1};
 	fillOpCodeMap(opCodeMap);
 	fillOpIdMap(opIdMap);
-	fillOpTypeMap(opTypeMap);
 	ifstream fin(argv[1]);
 	ofstream fout(argv[2]);
 	begin(fout);
@@ -102,27 +78,35 @@ int main(int argc, char *argv[]){
 	stringstream ss;
 	while (getline(fin, s)){
 		if (s[0] != ';'){
+		    while(s[0] == ' ' || s[0] == '\t') s.erase(0, 1);
+		    if(s[0] == '\0') continue;
 			ss.str(s);
 			string op;
 			ss >> op;
-			fout << hex << pc
-				 << " : "
+			fout << hex << uppercase << pc << " : "
 				 << bitset<5>(opCodeMap[op]);
+            pc++;
 			switch (opTypeMap[opCodeMap[op]]){
 				case 0:{
-					fout << bitset<11>(0);
+					fout << bitset<3>(0)
+                         << ";" << endl << hex << uppercase << pc << " : "
+                         << bitset<8>(0);
 				}break;
 				case 1:{
 					string op1, op2;
 					ss >> op1 >> op2;
-					fout << bitset<3>(opIdMap[op1]);
+					fout << bitset<3>(opIdMap[op1])
+                         << ";" << endl << hex << uppercase << pc << " : ";
 					if (memMap[op2] != 0){
 						fout << bitset<8>(opIdMap[op2]);
 					}
 					else{
 						int n;
-						stringstream ss_(op2);
-						ss_ >> n;
+						if(opIdMap[op2]!=NULL) n=opIdMap[op2];
+						else{
+                            stringstream ss_(op2);
+                            ss_ >> n;
+                        }
 						fout << bitset<8>(n);
 					}
 				}break;
@@ -130,13 +114,15 @@ int main(int argc, char *argv[]){
 					string op1, op2;
 					ss >> op1 >> op2;
 					fout << bitset<3>(opIdMap[op1])
+                         << ";" << endl << hex << uppercase << pc << " : "
 						 << bitset<3>(opIdMap[op2])
 						 << bitset<5>(0);
 				}break;
 				case 3:{
-					string op1, op2, op2;
-					ss >> op1 >> op2 >>op3;
+					string op1, op2, op3;
+					ss >> op1 >> op2 >> op3;
 					fout << bitset<3>(opIdMap[op1])
+                         << ";" << endl << hex << uppercase << pc << " : "
 						 << bitset<3>(opIdMap[op2])
 						 << bitset<3>(opIdMap[op3])
 						 << bitset<2>(0);
