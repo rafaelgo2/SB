@@ -44,13 +44,38 @@ void fillOpIdMap(map<string, int> &opIdMap){
 
 
 void fillOpTypeMap(map<int, int> &opTypeMap){
-	opTypeMap[000] = 0;
-	opTypeMap[001] = 1;
-	opTypeMap[002] = 1;
-	opTypeMap[003] = 2;
-	opTypeMap[004] = 2;
-	opTypeMap[005] = 2;
-	opTypeMap[006] = 2;
+//0: 11B
+//1: 3R 8B
+
+
+	opTypeMap[00] = 0; //0
+	opTypeMap[01] = 1; //1
+	opTypeMap[02] = 1; //2
+	opTypeMap[03] = 2; //3
+	opTypeMap[04] = 2; //4
+	opTypeMap[05] = 2; //5
+	opTypeMap[06] = 2; //6
+	opTypeMap[07] = 4; //7
+	opTypeMap[10] = 1; //8
+	opTypeMap[11] = 1; //9
+	opTypeMap[12] = 2; //10
+	opTypeMap[13] = 2; //11
+	opTypeMap[14] = 2; //12
+	opTypeMap[15] = 5; //13
+	opTypeMap[16] = 1; //14
+	opTypeMap[17] = 6; //15
+	opTypeMap[20] = 3; //16
+	opTypeMap[21] = 4; //17
+	opTypeMap[22] = 5; //18
+	opTypeMap[23] = 5; //19
+	opTypeMap[24] = 0; //20
+	opTypeMap[25] = 6; //21
+	opTypeMap[26] = 6; //22
+	opTypeMap[27] = 5; //23
+	opTypeMap[30] = 3; //24
+	opTypeMap[31] = 3; //25
+	opTypeMap[32] = 3; //26
+	
 }
 
 void begin(ofstream &fout){
@@ -66,17 +91,8 @@ void end(ofstream &fout){
 	fout << endl << "END;";
 }
 
-/*
-
-			if (s[0] == '_'){
-				string label;
-				ss >> label;
-				labelMap[label] = pc;
-			}
-*/
-
 int main(int argc, char *argv[]){
-	map<string, int> labelMap, opCodeMap, opIdMap;
+	map<string, int> labelMap, opCodeMap, opIdMap, memMap;
 	map<int, int> opTypeMap;
 	fillOpCodeMap(opCodeMap);
 	fillOpIdMap(opIdMap);
@@ -100,10 +116,22 @@ int main(int argc, char *argv[]){
 					fout << bitset<11>(0);
 				}break;
 				case 1:{
-
+					string op1, op2;
+					ss >> op1 >> op2;
+					fout << bitset<3>(opIdMap[op1]);
+					if (memMap[op2] != 0){
+						fout << bitset<8>(opIdMap[op2]);
+					}
+					else{
+						int n;
+						stringstream ss_(op2);
+						ss_ >> n;
+						fout << bitset<8>(n);
+					}
 				}break;
 				case 2:{
 					string op1, op2;
+					ss >> op1 >> op2;
 					fout << bitset<3>(opIdMap[op1])
 						 << bitset<3>(opIdMap[op2])
 						 << bitset<5>(0);
