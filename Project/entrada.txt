@@ -1,0 +1,4 @@
+add R0 R1;
+add R0 R1;
+add R0 R1;
+exit;
