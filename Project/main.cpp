@@ -43,39 +43,36 @@ void fillOpIdMap(map<string, int> &opIdMap){
 }
 
 
-void fillOpTypeMap(map<int, int> &opTypeMap){
+void fillOpTypeMap(int *opTypeMap){
 //0: 11B
 //1: 3R 8B
-
-
-	opTypeMap[00] = 0; //0
-	opTypeMap[01] = 1; //1
-	opTypeMap[02] = 1; //2
-	opTypeMap[03] = 2; //3
-	opTypeMap[04] = 2; //4
-	opTypeMap[05] = 2; //5
-	opTypeMap[06] = 2; //6
-	opTypeMap[07] = 4; //7
-	opTypeMap[10] = 1; //8
-	opTypeMap[11] = 1; //9
-	opTypeMap[12] = 2; //10
-	opTypeMap[13] = 2; //11
-	opTypeMap[14] = 2; //12
-	opTypeMap[15] = 5; //13
-	opTypeMap[16] = 1; //14
-	opTypeMap[17] = 6; //15
-	opTypeMap[20] = 3; //16
-	opTypeMap[21] = 4; //17
-	opTypeMap[22] = 5; //18
-	opTypeMap[23] = 5; //19
-	opTypeMap[24] = 0; //20
-	opTypeMap[25] = 6; //21
-	opTypeMap[26] = 6; //22
-	opTypeMap[27] = 5; //23
-	opTypeMap[30] = 3; //24
-	opTypeMap[31] = 3; //25
-	opTypeMap[32] = 3; //26
-	
+	opTypeMap[0] = 0;
+	opTypeMap[1] = 1;
+	opTypeMap[2] = 1;
+	opTypeMap[3] = 2;
+	opTypeMap[4] = 2;
+	opTypeMap[5] = 2;
+	opTypeMap[6] = 2;
+    opTypeMap[7] = 1;
+	opTypeMap[8] = 1;
+	opTypeMap[9] = 1;
+	opTypeMap[10] = 2;
+	opTypeMap[11] = 2;
+	opTypeMap[12] = 2;
+	opTypeMap[13] = 1;
+	opTypeMap[14] = 1;
+	opTypeMap[15] = 1;
+	opTypeMap[16] = 3;
+	opTypeMap[17] = 1;
+	opTypeMap[18] = 1;
+	opTypeMap[19] = 1;
+	opTypeMap[20] = 0;
+	opTypeMap[21] = 1;
+	opTypeMap[22] = 1;
+	opTypeMap[23] = 1;
+	opTypeMap[24] = 3;
+	opTypeMap[25] = 3;
+	opTypeMap[26] = 1;
 }
 
 void begin(ofstream &fout){
@@ -93,7 +90,7 @@ void end(ofstream &fout){
 
 int main(int argc, char *argv[]){
 	map<string, int> labelMap, opCodeMap, opIdMap, memMap;
-	map<int, int> opTypeMap;
+	int opTypeMap[27];
 	fillOpCodeMap(opCodeMap);
 	fillOpIdMap(opIdMap);
 	fillOpTypeMap(opTypeMap);
@@ -137,9 +134,14 @@ int main(int argc, char *argv[]){
 						 << bitset<5>(0);
 				}break;
 				case 3:{
-
+					string op1, op2, op2;
+					ss >> op1 >> op2 >>op3;
+					fout << bitset<3>(opIdMap[op1])
+						 << bitset<3>(opIdMap[op2])
+						 << bitset<3>(opIdMap[op3])
+						 << bitset<2>(0);
 				}break;
-			} 
+			}
 			fout << ";" << endl;
 			pc++;
 		}
