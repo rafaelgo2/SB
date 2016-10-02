@@ -4,6 +4,8 @@
 #include <map>
 #include <bitset>
 #include <cstring>
+#include <iomanip>
+#include <string>
 
 using namespace std;
 
@@ -38,17 +40,14 @@ void fillOpCodeMap(map<string, int> &opCodeMap){
 }
 
 void fillOpIdMap(map<string, int> &opIdMap){
-    stringstream riStream;
-    string riString;
+	stringstream ss;
+	string s;
 	for (int i = 0; i < 8; i++){
-        riStream << 'R' << i;
-        riStream >> riString;
-		opIdMap[riString] = i;
-        riStream.clear();
+		ss << "R" << i;
+		ss >> s;		
+		opIdMap[s] = i;
+		ss.clear();		
 	}
-	opIdMap["negOne"]=44;
-	opIdMap["sign"]=46;
-	opIdMap["one"]=48;
 	opIdMap["IO"] = 254;
 }
 
@@ -56,7 +55,7 @@ void begin(ofstream &fout){
 	fout << "DEPTH = 256;" << endl
 		 << "WIDTH = 8;" << endl
 		 << "ADDRESS_RADIX = HEX;" << endl
-		 << "DATA_RADIX = BIN" << endl
+		 << "DATA_RADIX = BIN;" << endl
 		 << "CONTENT" << endl
 		 << "BEGIN" << endl << endl;
 }
@@ -65,73 +64,108 @@ void end(ofstream &fout){
 	fout << endl << "END;";
 }
 
+void newInstruction(int &pc, int n, ofstream &fout){
+	fout << hex << uppercase << setfill('0') << setw(2) << pc << " : "
+		 << bitset<8>(n) << ";" << endl;
+	pc++;
+}
+
+void lastInstructions(int pc, ofstream &fout){
+	fout << "[" << hex << uppercase << setfill('0') << setw(2) << pc
+		 << "..FF]: " << bitset<8>(0) << ";";
+}
+
+
 int main(int argc, char *argv[]){
 	map<string, int> labelMap, opCodeMap, opIdMap, memMap;
 	int opTypeMap[27] = {0, 1, 1, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 1, 1, 1, 3, 1, 1, 1, 0, 1, 1, 1, 3, 3, 1};
 	fillOpCodeMap(opCodeMap);
 	fillOpIdMap(opIdMap);
-	ifstream fin(argv[1]);
+	ifstream fin(argv[1]);    
+	int pc = 0;	
+    string aux, s;
+	stringstream ssaux, ss;
+	while (getline(fin, aux, ';')){
+		ssaux.str(aux);
+		getline(ssaux, s, ':');
+		ss.str(s);
+		string tmp;
+		ss >> tmp;
+        if (tmp.size() > 0){
+            if (tmp[0] == '_'){
+                labelMap[tmp] = pc+1;
+            }
+            pc += 2;
+        }
+		ss.clear();
+		ssaux.clear();
+	}
+    fin.clear();
+    fin.seekg(0, fin.beg);
+
+
+
+
 	ofstream fout(argv[2]);
 	begin(fout);
-	int pc = 0;
-	string s;
-	stringstream ss;
-	while (getline(fin, s)){
-		if (s[0] != ';'){
-		    while(s[0] == ' ' || s[0] == '\t') s.erase(0, 1);
-		    if(s[0] == '\0') continue;
-			ss.str(s);
-			string op;
-			ss >> op;
-			fout << hex << uppercase << pc << " : "
-				 << bitset<5>(opCodeMap[op]);
-            pc++;
-			switch (opTypeMap[opCodeMap[op]]){
-				case 0:{
-					fout << bitset<3>(0)
-                         << ";" << endl << hex << uppercase << pc << " : "
-                         << bitset<8>(0);
-				}break;
-				case 1:{
-					string op1, op2;
-					ss >> op1 >> op2;
-					fout << bitset<3>(opIdMap[op1])
-                         << ";" << endl << hex << uppercase << pc << " : ";
-					if (memMap[op2] != 0){
-						fout << bitset<8>(opIdMap[op2]);
-					}
-					else{
-						int n;
-						if(opIdMap[op2]!=NULL) n=opIdMap[op2];
-						else{
-                            stringstream ss_(op2);
-                            ss_ >> n;
-                        }
-						fout << bitset<8>(n);
-					}
-				}break;
-				case 2:{
-					string op1, op2;
-					ss >> op1 >> op2;
-					fout << bitset<3>(opIdMap[op1])
-                         << ";" << endl << hex << uppercase << pc << " : "
-						 << bitset<3>(opIdMap[op2])
-						 << bitset<5>(0);
-				}break;
-				case 3:{
-					string op1, op2, op3;
-					ss >> op1 >> op2 >> op3;
-					fout << bitset<3>(opIdMap[op1])
-                         << ";" << endl << hex << uppercase << pc << " : "
-						 << bitset<3>(opIdMap[op2])
-						 << bitset<3>(opIdMap[op3])
-						 << bitset<2>(0);
-				}break;
+	pc = 0;
+	while (getline(fin, aux)){
+		ssaux.str(aux);
+		getline(ssaux, s, ';');
+		ss.str(s);
+		string op;
+		ss >> op;
+		if (op.size() > 0){
+			if (op[0] == '_'){
+                string label = op;
+                ss >> op;
 			}
-			fout << ";" << endl;
-			pc++;
+			if (opTypeMap[opCodeMap[op]] == 0){
+				lastInstructions(pc, fout);				
+			}
+			else{				
+				switch (opTypeMap[opCodeMap[op]]){
+					case 1:{
+						string op1, op2;
+						ss >> op1 >> op2;
+						newInstruction(pc, (opCodeMap[op] << 3) + opIdMap[op1], fout);
+                        cout << s << endl;
+                        cout << op2 << endl;
+						if (memMap[op2] != 0){
+							newInstruction(pc, memMap[op2]-1, fout);
+						}
+                        else if (labelMap[op2] != 0){
+                            cout << pc << endl;
+                            newInstruction(pc, labelMap[op2]-1, fout);
+                           
+                        }
+						else{
+							int n;
+							stringstream ss_(op2);
+							ss_ >> n;
+							newInstruction(pc, n, fout);
+						}
+					}break;
+					case 2:{
+						string op1, op2;
+						ss >> op1 >> op2;
+						newInstruction(pc, (opCodeMap[op] << 3) + opIdMap[op1], fout);
+						newInstruction(pc, (opIdMap[op2] << 5), fout);
+					}break;
+					case 3:{
+						string op1, op2, op3;
+						ss >> op1 >> op2 >> op3;
+						newInstruction(pc, (opCodeMap[op] << 3) + opIdMap[op1], fout);
+						newInstruction(pc, (opIdMap[op2] << 5) + (opIdMap[op3] << 2), fout);
+					}break;
+				}
+			}		
 		}
+		ss.clear();
+		ssaux.clear();
 	}
 	end(fout);
+	fin.close();
+	fout.close();
 	return 0;
 }
