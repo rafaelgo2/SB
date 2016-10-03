@@ -1,8 +1,3 @@
-add R0 R1;
+loadi R0 IO;
+storeSp R0 0;
 exit;
-
-teste: .data 1 63;
-negOne:	.data 2 -1;
-sign: .data 2 1;
-one: .data 4 0;
-coringa: .data 2 10;

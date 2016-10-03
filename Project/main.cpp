@@ -13,7 +13,7 @@ using namespace std;
 
 typedef struct{
 	int numBytes;
-	int value;
+	string bits[256];
 	int pc;
 } mem;
 
@@ -77,7 +77,7 @@ void newInstruction(int &pc, int n, ofstream &fout){
 	pc++;
 }
 
-void lastInstructions(int pc, int sp, ofstream &fout, map<string, mem> &memMap, queue<string> &memQueue){
+void lastInstructions(int pc, ofstream &fout, map<string, mem> &memMap, queue<string> &memQueue){
 	if (memMap.size() == 0)
 		fout << "[" << hex << uppercase << setfill('0') << setw(2) << pc
 			 << "..FF]: " << bitset<8>(0) << ";"<< endl;
@@ -90,22 +90,18 @@ void lastInstructions(int pc, int sp, ofstream &fout, map<string, mem> &memMap, 
 		while (!memQueue.empty()){
 			string mems = memQueue.front();
 			memQueue.pop();
-			cout << mems << endl;
 			mem mem_ = memMap[mems];
-			if (mem_.numBytes == 1){
-				fout << hex << uppercase << setfill('0') << setw(2) << pc
-					 << " : " << bitset<8>(mem_.value) << ";" << endl;
-			}
-			else{
-				fout << "[" << hex << uppercase << setfill('0') << setw(2) << pc
-					 << ".." << hex << uppercase << setfill('0') << setw(2) << pc+mem_.numBytes-1
-	 				 << "]: " << bitset<8>(mem_.value) << ";" << endl;		
-			}			
-			pc += mem_.numBytes;
+			for (int i = 0; i < mem_.numBytes; pc++, i++)
+				fout << pc << ": " << mem_.bits[i] << ";" << endl;
 		}
 		fout << "[" << hex << uppercase << setfill('0') << setw(2) << pc
 			 << "..FF]: " << bitset<8>(0) << ";" << endl;
 	}
+}
+
+void turnValueIntoBits(mem &mem_, string value){
+	for (int i = 0; i < mem_.numBytes; i++)
+		mem_.bits[i] = "01010101";
 }
 
 int main(int argc, char *argv[]){
@@ -130,13 +126,18 @@ int main(int argc, char *argv[]){
 			else{
 				string waste;
 				ss >> waste;
-				int numBytes, value;
-				ss >> numBytes >> value;
+				int numBytes;
+				ss >> numBytes;
+				string value;
+				ss >> value;
 				stringstream ssmem;
 				ssmem.str(tmp);
 				string mems;
 				getline(ssmem, mems, ':');
-				mem mem_ = {numBytes, value, pc};
+				mem mem_;
+				mem_.numBytes = numBytes;
+				mem_.pc = pc;
+				turnValueIntoBits(mem_, value);
 				memMap[mems] = mem_;
 				memQueue.push(mems);
 				pc += numBytes;
@@ -145,6 +146,7 @@ int main(int argc, char *argv[]){
 		else{
 			pc += 2;
 		}
+		getline(fin, s, '\n');
 		s.clear();
 		ss.clear();
 	}
@@ -155,8 +157,6 @@ int main(int argc, char *argv[]){
 	begin(fout);
 	pc = 0;
 	while (getline(fin, s, ';')){
-		if (s.size() == 0)
-			continue;
 		ss.str(s);
 		string op;
 		ss >> op;
@@ -210,10 +210,11 @@ int main(int argc, char *argv[]){
 				}
 			}break;
 			case 5:{
-				lastInstructions(pc, sp, fout, memMap, memQueue);
+				lastInstructions(pc, fout, memMap, memQueue);
 				fin.seekg(0, fin.end);
 			}break;
 		}
+		getline(fin, s, '\n');
 		s.clear();
 		ss.clear();
 	}
