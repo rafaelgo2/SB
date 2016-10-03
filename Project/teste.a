@@ -37,3 +37,4 @@ _pos:	storei R2 IO	; pos: output the final sum in R2
 negOne:	.data 2 -1	; negOne: constant -1
 sign:	.data 2 1	; sign: (1 or -1)
 one:	.data 2 1	; constant 1
+

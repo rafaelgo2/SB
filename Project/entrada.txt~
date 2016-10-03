@@ -1,4 +1,4 @@
-add R0 teste
+add R0 teste;
 exit;
 
 teste: .data 2 63;
