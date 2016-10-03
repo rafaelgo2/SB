@@ -1,5 +1,0 @@
-add R0 R1;
-exit;
-
-teste: .data 8 0;
-teste1: .data 2 1;
