@@ -10,7 +10,7 @@
 using namespace std;
 
 void fillOpCodeMap(map<string, int> &opCodeMap){
-	opCodeMap["exit"] = 0; // REDUNDANTE
+	opCodeMap["exit"] = 0;
 	opCodeMap["loadi"] = 1;
 	opCodeMap["storei"] = 2;
 	opCodeMap["add"] = 3;
@@ -37,7 +37,6 @@ void fillOpCodeMap(map<string, int> &opCodeMap){
 	opCodeMap["sgt"] = 24;
 	opCodeMap["seq"] = 25;
 	opCodeMap["jmpp"] = 26;
-	opCodeMap[".data"] = 27;
 }
 
 void fillOpIdMap(map<string, int> &opIdMap){
@@ -71,15 +70,15 @@ void newInstruction(int &pc, int n, ofstream &fout){
 	pc++;
 }
 
-void lastInstructions(int pc, int sp, ofstream &fout){
+void lastInstructions(int pc, int memEnd, ofstream &fout){
 	fout << "[" << hex << uppercase << setfill('0') << setw(2) << pc
-		 << ".." << hex << uppercase << setfill('0') << setw(2) << sp
+		 << ".." << hex << uppercase << setfill('0') << setw(2) << memEnd
 		 << "]: " << bitset<8>(0) << ";" << endl;
 }
 
 
 int main(int argc, char *argv[]){
-	int opTypeMap[28] = {5, 1, 1, 2, 2, 2, 2, 4, 1, 1, 2, 2, 2, 1, 1, 4, 3, 4, 1, 1, 5, 4, 4, 1, 3, 3, 1, 6}, pc=0, sp = 254;
+	int opTypeMap[27] = {0, 1, 1, 2, 2, 2, 2, 4, 1, 1, 2, 2, 2, 1, 1, 4, 3, 4, 1, 1, 0, 4, 4, 1, 3, 3, 1}, pc=0, memEnd = 254;
 	map<string, int> labelMap, opCodeMap, opIdMap;
 	map<int, int> memMap;
 	fillOpCodeMap(opCodeMap);
@@ -98,17 +97,18 @@ int main(int argc, char *argv[]){
         if (tmp.size() > 0){
 			string op;
 			ssaux >> op;
-			if (op == ".data"){
-				int numBytes;
-				ssaux >> numBytes;
-				labelMap[tmp] = pc+1;
-				pc += numBytes - 2;
+			if(op == ".data"){
+				int numBytes, initialValue;
+				ssaux >> numBytes >> initialValue;
+				memEnd-=numBytes;
+				memMap[memEnd] = initialValue;
+				labelMap[tmp] = memEnd;
 			}
             else if (tmp[0] == '_'){
-		        labelMap[tmp] = pc+1;
+                labelMap[tmp] = pc+1;
 				cout << endl << uppercase << tmp << ' ' << pc << endl;
-			}
-			pc += 2;
+            }
+            pc += 2;
         }
 		ss.clear();
 		ssaux.clear();
@@ -128,7 +128,7 @@ int main(int argc, char *argv[]){
 		string op;
 		ss >> op;
 		if (op.size() > 0){
-			if (op[0] == '_' || opCodeMap[op] == 0){
+			if (op[0] == '_'){
                 string label = op;
                 ss >> op;
 			}
@@ -183,26 +183,21 @@ int main(int argc, char *argv[]){
 						newInstruction(pc, n, fout);
 					}
 				}break;
-				case 5:{
-					newInstruction(pc, (opCodeMap[op] << 3), fout);
-					newInstruction(pc, 0, fout);
-				}break;
-				case 6:{
-					int numBytes, initialValue;
-					ss >> numBytes >> initialValue;
-
-					// AQUI ASSUMO QUE TODAS AS ALOCAÇÕES RESERVAM 1 OU 2 BYTES
-					for(numBytes--; numBytes >= 0; numBytes--){
-						newInstruction(pc, initialValue >> 8*numBytes, fout);
-					}
-				}break;
 			}
 		}
 		ss.clear();
 		ssaux.clear();
 	}
-	if(sp == 254) lastInstructions(pc, 256, fout);
-	else lastInstructions(pc, sp, fout);
+	lastInstructions(pc, memEnd-1, fout);
+	while(memEnd < 256){ // AQUI EU ASSUMO QUE TODAS AS ALOCAÇÕES DE .data RESERVAM 1 OU 2 POSIÇÕES DE MEMÓRIA
+		if(memMap[memEnd+1] == 0){
+			newInstruction(memEnd, memMap[memEnd] >> 8, fout);
+			newInstruction(memEnd, memMap[memEnd-1], fout);
+		}
+		else{
+			newInstruction(memEnd, memMap[memEnd], fout);
+		}
+	}
 	end(fout);
 	fin.close();
 	fout.close();
