@@ -80,8 +80,7 @@ void lastInstructions(int pc, int sp, ofstream &fout){
 
 int main(int argc, char *argv[]){
 	int opTypeMap[28] = {5, 1, 1, 2, 2, 2, 2, 4, 1, 1, 2, 2, 2, 1, 1, 4, 3, 4, 1, 1, 5, 4, 4, 1, 3, 3, 1, 6}, pc=0, sp = 254;
-	map<string, int> labelMap, opCodeMap, opIdMap;
-	map<int, int> memMap;
+	map<string, int> labelMap, opCodeMap, opIdMap, memMap;
 	fillOpCodeMap(opCodeMap);
 	fillOpIdMap(opIdMap);
 	ifstream fin(argv[1]);
@@ -90,6 +89,7 @@ int main(int argc, char *argv[]){
 	while (getline(fin, aux)){
 		ssaux.str(aux);
 		getline(ssaux, aux, ';');
+		ssaux.clear();
 		ssaux.str(aux);
 		getline(ssaux, s, ':');
 		ss.str(s);
@@ -102,14 +102,17 @@ int main(int argc, char *argv[]){
 				int numBytes;
 				ssaux >> numBytes;
 				labelMap[tmp] = pc+1;
-				pc += numBytes - 2;
+				pc += numBytes;
 			}
-            else if (tmp[0] == '_'){
-		        labelMap[tmp] = pc+1;
-				cout << endl << uppercase << tmp << ' ' << pc << endl;
+            else {
+				if (tmp[0] == '_'){
+			        labelMap[tmp] = pc+1;
+				}
+				pc += 2;
 			}
-			pc += 2;
         }
+		s.clear();
+		aux.clear();
 		ss.clear();
 		ssaux.clear();
 	}
@@ -137,13 +140,10 @@ int main(int argc, char *argv[]){
 					string op1, op2;
 					ss >> op1 >> op2;
 					newInstruction(pc, (opCodeMap[op] << 3) + opIdMap[op1], fout);
-                    cout << s << endl;
-                    cout << op2 << endl;
-					if (memMap[0] != 0){ // RESOLVER ISSO
-						newInstruction(pc, memMap[0]-1, fout); // AQUI TAMBÉM
+					if (memMap[op2] != 0){
+						newInstruction(pc, memMap[op2]-1, fout);
 					}
                     else if (labelMap[op2] != 0){
-                        cout << pc << " " << labelMap[op2]-1 << endl;
                         newInstruction(pc, labelMap[op2]-1, fout);
                     }
 					else{
@@ -169,11 +169,10 @@ int main(int argc, char *argv[]){
 					string op1;
 					ss >> op1;
 					newInstruction(pc, (opCodeMap[op] << 3), fout);
-					if (memMap[0] != 0){ // RESOLVER DE NOVO
-						newInstruction(pc, memMap[0]-1, fout); // MAIS UMA VEZ PQ RAFAEL, WTF?
+					if (memMap[op1] != 0){
+						newInstruction(pc, memMap[op1]-1, fout);
 					}
                     else if (labelMap[op1] != 0){
-                        cout << pc << " " << labelMap[op1]-1 << endl;
                         newInstruction(pc, labelMap[op1]-1, fout);
                     }
 					else{
@@ -201,8 +200,10 @@ int main(int argc, char *argv[]){
 		ss.clear();
 		ssaux.clear();
 	}
-	if(sp == 254) lastInstructions(pc, 256, fout);
-	else lastInstructions(pc, sp, fout);
+	lastInstructions(pc, sp, fout);
+	while (sp < 256){
+		newInstruction(sp, 0, fout); // (???) já não sei mais nada do que tô fazendo
+	}
 	end(fout);
 	fin.close();
 	fout.close();
