@@ -12,11 +12,7 @@ using namespace std;
 
 typedef struct{
 	int numBytes;
-<<<<<<< HEAD
-	string bits[256];
-=======
-	long long int value;
->>>>>>> 68137abafbb4e1c1ac5c813287f15f04635c724a
+	int value;
 	int pc;
 } mem;
 
@@ -59,7 +55,6 @@ void fillRegMap(map<string, int> &regMap){
 		regMap[s] = i;
 		ss.clear();
 	}
-    regMap["IO"] = 254;
 }
 
 void begin(ofstream &fout){
@@ -76,12 +71,15 @@ void end(ofstream &fout){
 }
 
 void newInstruction(int &pc, int n, ofstream &fout){
+	if (n == 254){
+		cout << "DEUS" << endl;
+	}
 	fout << hex << uppercase << setfill('0') << setw(2) << pc << " : "
 		 << bitset<8>(n) << ";" << endl;
 	pc++;
 }
 
-void lastInstructions(int pc, ofstream &fout, map<string, mem> &memMap, queue<string> &memQueue){
+void lastInstructions(int pc, int sp, ofstream &fout, map<string, mem> &memMap, queue<string> &memQueue){
 	if (memMap.size() == 0)
 		fout << "[" << hex << uppercase << setfill('0') << setw(2) << pc
 			 << "..FF]: " << bitset<8>(0) << ";"<< endl;
@@ -95,33 +93,15 @@ void lastInstructions(int pc, ofstream &fout, map<string, mem> &memMap, queue<st
 			string mems = memQueue.front();
 			memQueue.pop();
 			mem mem_ = memMap[mems];
-<<<<<<< HEAD
-			for (int i = 0; i < mem_.numBytes; pc++, i++)
-				fout << pc << ": " << mem_.bits[i] << ";" << endl;
-=======
-            if (mem_.numBytes == 8)
-                for (int i = 0; i < 8; i++)
-                    newInstruction(pc, 0, fout); 
-            else{
-                int numBytes = mem_.numBytes;                
-                while (numBytes--){
-			        newInstruction(pc, mem_.value >> (8*numBytes), fout);
-                }
-            }
->>>>>>> 68137abafbb4e1c1ac5c813287f15f04635c724a
+			newInstruction(pc, mem_.value >> 8, fout);
+			newInstruction(pc, mem_.value, fout);
+			// pc += mem_.numBytes;
 		}
 		fout << "[" << hex << uppercase << setfill('0') << setw(2) << pc
 			 << "..FF]: " << bitset<8>(0) << ";" << endl;
 	}
 }
 
-<<<<<<< HEAD
-void turnValueIntoBits(mem &mem_, string value){
-	for (int i = 0; i < mem_.numBytes; i++)
-		mem_.bits[i] = "01010101";
-}
-=======
->>>>>>> 68137abafbb4e1c1ac5c813287f15f04635c724a
 
 int main(int argc, char *argv[]){
 	int opTypeMap[27] = {0, 1, 1, 2, 2, 2, 2, 4, 1, 1, 2, 2, 2, 1, 1, 4, 3, 4, 1, 1, 5, 4, 4, 1, 3, 3, 1}, pc=0, sp = 254;
@@ -147,11 +127,9 @@ int main(int argc, char *argv[]){
 				string op;
 				ss >> op;
 				if (op == ".data"){
-					int numBytes;
-					ss >> numBytes;
-                    long long int value;
-                    ss >> value;
-                    mem mem_ = {numBytes, value, pc};
+					int numBytes, value;
+					ss >> numBytes >> value;
+					mem mem_ = {numBytes, value, pc};
 					memMap[tmp] = mem_;
 					memQueue.push(tmp);
 					pc += numBytes;
@@ -162,35 +140,11 @@ int main(int argc, char *argv[]){
 				}
 			}
 			else{
-<<<<<<< HEAD
-				string waste;
-				ss >> waste;
-				int numBytes;
-				ss >> numBytes;
-				string value;
-				ss >> value;
-				stringstream ssmem;
-				ssmem.str(tmp);
-				string mems;
-				getline(ssmem, mems, ':');
-				mem mem_;
-				mem_.numBytes = numBytes;
-				mem_.pc = pc;
-				turnValueIntoBits(mem_, value);
-				memMap[mems] = mem_;
-				memQueue.push(mems);
-				pc += numBytes;
-=======
 				pc += 2;
->>>>>>> 68137abafbb4e1c1ac5c813287f15f04635c724a
 			}
 		}
-<<<<<<< HEAD
-		getline(fin, s, '\n');
-=======
 		ssaux.clear();
 		saux.clear();
->>>>>>> 68137abafbb4e1c1ac5c813287f15f04635c724a
 		s.clear();
 		ss.clear();
 	}
@@ -199,67 +153,6 @@ int main(int argc, char *argv[]){
 	ofstream fout(argv[2]);
 	begin(fout);
 	pc = 0;
-<<<<<<< HEAD
-	while (getline(fin, s, ';')){
-		ss.str(s);
-		string op;
-		ss >> op;
-		if (op[op.size() - 1] == ':')
-            ss >> op;
-		switch (opTypeMap[opCodeMap[op]]){
-			case 1:{
-				string op1, op2;
-				ss >> op1 >> op2;
-				newInstruction(pc, (opCodeMap[op] << 3) + opIdMap[op1], fout);
-				if (memMap[op2].numBytes != 0){
-					newInstruction(pc, memMap[op2].pc, fout);
-				}
-                else if (labelMap[op2] != 0){
-                    newInstruction(pc, labelMap[op2]-1, fout);
-                }
-				else{
-					int n;
-					stringstream ss_(op2);
-					ss_ >> n;
-					newInstruction(pc, n, fout);
-				}
-			}break;
-			case 2:{
-				string op1, op2;
-				ss >> op1 >> op2;
-				newInstruction(pc, (opCodeMap[op] << 3) + opIdMap[op1], fout);
-				newInstruction(pc, (opIdMap[op2] << 5), fout);
-			}break;
-			case 3:{
-				string op1, op2, op3;
-				ss >> op1 >> op2 >> op3;
-				newInstruction(pc, (opCodeMap[op] << 3) + opIdMap[op1], fout);
-				newInstruction(pc, (opIdMap[op2] << 5) + (opIdMap[op3] << 2), fout);
-			}break;
-			case 4:{
-				string op1;
-				ss >> op1;
-				newInstruction(pc, (opCodeMap[op] << 3), fout);
-				if (memMap[op1].numBytes != 0){
-					newInstruction(pc, memMap[op1].pc, fout);
-				}
-                else if (labelMap[op1] != 0){
-                    newInstruction(pc, labelMap[op1]-1, fout);
-                }
-				else{
-					int n;
-					stringstream ss_(op1);
-					ss_ >> n;
-					newInstruction(pc, n, fout);
-				}
-			}break;
-			case 5:{
-				lastInstructions(pc, fout, memMap, memQueue);
-				fin.seekg(0, fin.end);
-			}break;
-		}
-		getline(fin, s, '\n');
-=======
 	while (getline(fin, saux)){
 		ssaux.str(saux);
 		getline(ssaux, s, ';');	
@@ -329,7 +222,6 @@ int main(int argc, char *argv[]){
 		}
 		ssaux.clear();
 		saux.clear();
->>>>>>> 68137abafbb4e1c1ac5c813287f15f04635c724a
 		s.clear();
 		ss.clear();
 	}
