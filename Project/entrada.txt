@@ -1,4 +1,5 @@
-add R0 teste
+loadi R0 IO;
 exit;
 
-teste: .data 2 63;
+teste: .data 8 0;
+teste1: .data 2 1;

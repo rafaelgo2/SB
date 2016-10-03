@@ -107,11 +107,13 @@ int main(int argc, char *argv[]){
 	int opTypeMap[27] = {0, 1, 1, 2, 2, 2, 2, 4, 1, 1, 2, 2, 2, 1, 1, 4, 3, 4, 1, 1, 5, 4, 4, 1, 3, 3, 1}, pc=0, sp = 254;
 	map<string, int> labelMap, opCodeMap, regMap;
 	map<string, mem> memMap;
+	mem io = {2, 0, 254};
+	memMap["IO"] = io;
 	queue<string> memQueue;
 	fillOpCodeMap(opCodeMap);
 	fillRegMap(regMap);
 	ifstream fin(argv[1]);
-    string s, saux;
+	string s, saux;
 	stringstream ss, ssaux;
 	while (getline(fin, saux)){
 		ssaux.str(saux);
@@ -132,11 +134,11 @@ int main(int argc, char *argv[]){
 					memQueue.push(tmp);
 					pc += numBytes;
 				}
-		        else{
+				else{
 					labelMap[tmp] = pc + 1;
 					pc += 2;
 				}
-		    }
+			}
 			else{
 				pc += 2;
 			}
@@ -146,9 +148,8 @@ int main(int argc, char *argv[]){
 		s.clear();
 		ss.clear();
 	}
-    fin.clear();
-    fin.seekg(0, fin.beg);
-	labelMap["IO"] = 255;
+	fin.clear();
+	fin.seekg(0, fin.beg);
 	ofstream fout(argv[2]);
 	begin(fout);
 	pc = 0;
@@ -160,7 +161,7 @@ int main(int argc, char *argv[]){
 		ss >> op;
 		if (op.size() > 0){
 			if (op[op.size() - 1] == ':')
-		        ss >> op;
+				ss >> op;
 			switch (opTypeMap[opCodeMap[op]]){
 				case 0:{
 					lastInstructions(pc, sp, fout, memMap, memQueue);
@@ -173,10 +174,10 @@ int main(int argc, char *argv[]){
 					if (memMap[op2].numBytes != 0){
 						newInstruction(pc, memMap[op2].pc, fout);
 					}
-                    else if (labelMap[op2] != 0){
+					else if (labelMap[op2] != 0){
 						cout << "|" << op2 << "|" << bitset<8>(labelMap[op2]) <<  endl;
-                        newInstruction(pc, labelMap[op2]-1, fout);
-                    }
+						newInstruction(pc, labelMap[op2]-1, fout);
+					}
 					else{
 						int n;
 						stringstream ss_(op2);
@@ -203,9 +204,9 @@ int main(int argc, char *argv[]){
 					if (memMap[op1].numBytes != 0){
 						newInstruction(pc, memMap[op1].pc, fout);
 					}
-                    else if (labelMap[op1] != 0){
-                        newInstruction(pc, labelMap[op1]-1, fout);
-                    }
+					else if (labelMap[op1] != 0){
+						newInstruction(pc, labelMap[op1]-1, fout);
+					}
 					else{
 						int n;
 						stringstream ss_(op1);
