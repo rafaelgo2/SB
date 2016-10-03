@@ -65,7 +65,7 @@ void end(ofstream &fout){
 	fout << endl << "END;";
 }
 
-void newInstruction(int &pc, long long int n, ofstream &fout){
+void newInstruction(int &pc, int n, ofstream &fout){
 	fout << hex << uppercase << setfill('0') << setw(2) << pc << " : "
 		 << bitset<8>(n) << ";" << endl;
 	pc++;
