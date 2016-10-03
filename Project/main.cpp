@@ -65,7 +65,7 @@ void end(ofstream &fout){
 	fout << endl << "END;";
 }
 
-void newInstruction(int &pc, int n, ofstream &fout){
+void newInstruction(int &pc, long long int n, ofstream &fout){
 	fout << hex << uppercase << setfill('0') << setw(2) << pc << " : "
 		 << bitset<8>(n) << ";" << endl;
 	pc++;
@@ -187,12 +187,17 @@ int main(int argc, char *argv[]){
 					newInstruction(pc, 0, fout);
 				}break;
 				case 6:{
-					int numBytes, initialValue;
+					int numBytes;
+					long long int initialValue;
 					ss >> numBytes >> initialValue;
-
-					// AQUI ASSUMO QUE TODAS AS ALOCAÇÕES RESERVAM 1 OU 2 BYTES
-					for(numBytes--; numBytes >= 0; numBytes--){
-						newInstruction(pc, initialValue >> 8*numBytes, fout);
+					if (numBytes > 8){ // AQUI ASSUMO QUE TODAS AS ALOCAÇÕES RESERVAM 8 OU MENOS BYTES
+						numBytes = 8;
+					}
+					if (numBytes%2){ // AQUI ASSUMO QUE TODAS AS ALOCAÇÕES RESERVAM MÚLTIPLOS DE 2 BYTES
+						numBytes++;
+					}
+					for (numBytes--; numBytes >= 0; numBytes--){
+						newInstruction(pc, (int) initialValue >> 8*numBytes, fout);
 					}
 				}break;
 			}
