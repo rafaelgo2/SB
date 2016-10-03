@@ -101,6 +101,8 @@ void lastInstructions(int pc, char ram[256], ofstream &fout, map<string, mem> &m
 		        newInstruction(pc, mem_.value >> (8*mem_.numBytes), ram);
 	}
 
+	cout << pc;
+
 	int cnt, cnt_;
 	for(cnt = 0; cnt < pc;){
 		if(ram[cnt] != ram[cnt+1])
@@ -190,6 +192,7 @@ int main(int argc, char *argv[]){
 					if (memMap[op2].numBytes != 0)
 						newInstruction(pc, memMap[op2].pc, ram);
 					else if (labelMap[op2] != 0){
+						cout << "|" << op2 << "|" << bitset<8>(labelMap[op2]) <<  endl;
 						newInstruction(pc, labelMap[op2]-1, ram);
 					}
 					else{

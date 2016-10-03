@@ -1,10 +1,4 @@
-loadi R0 IO;
-<<<<<<< HEAD
-storeSp R0 0;
-exit;
-=======
 exit;
 
 teste: .data 8 0;
 teste1: .data 2 1;
->>>>>>> 68137abafbb4e1c1ac5c813287f15f04635c724a
