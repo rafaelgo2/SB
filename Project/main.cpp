@@ -189,10 +189,8 @@ int main(int argc, char *argv[]){
 				case 6:{
 					int numBytes, initialValue;
 					ss >> numBytes >> initialValue;
-
-					// AQUI ASSUMO QUE TODAS AS ALOCAÇÕES RESERVAM 1 OU 2 BYTES
-					for(numBytes--; numBytes >= 0; numBytes--){
-						newInstruction(pc, initialValue >> 8*numBytes, fout);
+					while (numBytes-=2)					
+						newInstruction(pc, initialValue, fout);
 					}
 				}break;
 			}
