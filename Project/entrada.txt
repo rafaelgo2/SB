@@ -1,4 +1,8 @@
 add R0 R1;
-add R0 R1;
-add R0 R1;
 exit;
+
+teste: .data 1 63;
+negOne:	.data 2 -1;
+sign: .data 2 1;
+one: .data 4 0;
+coringa: .data 2 10;

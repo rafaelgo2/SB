@@ -6,11 +6,19 @@
 #include <cstring>
 #include <iomanip>
 #include <string>
+#include <queue>
 
 using namespace std;
 
+
+typedef struct{
+	int numBytes;
+	int value;
+	int pc;
+} mem;
+
 void fillOpCodeMap(map<string, int> &opCodeMap){
-	opCodeMap["exit"] = 0; // REDUNDANTE
+	opCodeMap["exit"] = 0;
 	opCodeMap["loadi"] = 1;
 	opCodeMap["storei"] = 2;
 	opCodeMap["add"] = 3;
@@ -37,7 +45,6 @@ void fillOpCodeMap(map<string, int> &opCodeMap){
 	opCodeMap["sgt"] = 24;
 	opCodeMap["seq"] = 25;
 	opCodeMap["jmpp"] = 26;
-	opCodeMap[".data"] = 27;
 }
 
 void fillOpIdMap(map<string, int> &opIdMap){
@@ -49,7 +56,6 @@ void fillOpIdMap(map<string, int> &opIdMap){
 		opIdMap[s] = i;
 		ss.clear();
 	}
-	opIdMap["IO"] = 254;
 }
 
 void begin(ofstream &fout){
@@ -62,7 +68,7 @@ void begin(ofstream &fout){
 }
 
 void end(ofstream &fout){
-	fout << endl << "END;";
+	fout << "END;";
 }
 
 void newInstruction(int &pc, int n, ofstream &fout){
@@ -71,154 +77,145 @@ void newInstruction(int &pc, int n, ofstream &fout){
 	pc++;
 }
 
-void lastInstructions(int pc, int sp, ofstream &fout){
-	fout << "[" << hex << uppercase << setfill('0') << setw(2) << pc
-		 << ".." << hex << uppercase << setfill('0') << setw(2) << sp
-		 << "]: " << bitset<8>(0) << ";" << endl;
+void lastInstructions(int pc, int sp, ofstream &fout, map<string, mem> &memMap, queue<string> &memQueue){
+	if (memMap.size() == 0)
+		fout << "[" << hex << uppercase << setfill('0') << setw(2) << pc
+			 << "..FF]: " << bitset<8>(0) << ";"<< endl;
+	else{
+		fout << "[" << hex << uppercase << setfill('0') << setw(2) << pc
+			 << ".." << hex << uppercase << setfill('0') << setw(2) << pc+1
+ 			 << "]: " << bitset<8>(0) << ";" << endl;
+		pc+=2;
+		
+		while (!memQueue.empty()){
+			string mems = memQueue.front();
+			memQueue.pop();
+			cout << mems << endl;
+			mem mem_ = memMap[mems];
+			if (mem_.numBytes == 1){
+				fout << hex << uppercase << setfill('0') << setw(2) << pc
+					 << " : " << bitset<8>(mem_.value) << ";" << endl;
+			}
+			else{
+				fout << "[" << hex << uppercase << setfill('0') << setw(2) << pc
+					 << ".." << hex << uppercase << setfill('0') << setw(2) << pc+mem_.numBytes-1
+	 				 << "]: " << bitset<8>(mem_.value) << ";" << endl;		
+			}			
+			pc += mem_.numBytes;
+		}
+		fout << "[" << hex << uppercase << setfill('0') << setw(2) << pc
+			 << "..FF]: " << bitset<8>(0) << ";" << endl;
+	}
 }
-
 
 int main(int argc, char *argv[]){
 	int opTypeMap[28] = {5, 1, 1, 2, 2, 2, 2, 4, 1, 1, 2, 2, 2, 1, 1, 4, 3, 4, 1, 1, 5, 4, 4, 1, 3, 3, 1, 6}, pc=0, sp = 254;
-	map<string, int> labelMap, opCodeMap, opIdMap, memMap;
+	map<string, int> labelMap, opCodeMap, opIdMap;
+	map<string, mem> memMap;
+	queue<string> memQueue;
 	fillOpCodeMap(opCodeMap);
 	fillOpIdMap(opIdMap);
 	ifstream fin(argv[1]);
-    string aux, s;
-	stringstream ssaux, ss;
-	while (getline(fin, aux)){
-		ssaux.str(aux);
-		getline(ssaux, aux, ';');
-		ssaux.clear();
-		ssaux.str(aux);
-		getline(ssaux, s, ':');
+    string s;
+	stringstream ss;
+	while (getline(fin, s, ';')){
 		ss.str(s);
 		string tmp;
 		ss >> tmp;
-        if (tmp.size() > 0){
-			string op;
-			ssaux >> op;
-			if (op == ".data"){
-				int numBytes;
-				if (numBytes > 8){
-					numBytes = 8;
-				}
-				else if (numBytes%2){
-					numBytes++;
-				}
-				ssaux >> numBytes;
+        if (tmp[tmp.size() - 1] == ':'){
+			if (tmp[0] == '_'){
 				labelMap[tmp] = pc+1;
+				pc+=2;
+			}
+			else{
+				string waste;
+				ss >> waste;
+				int numBytes, value;
+				ss >> numBytes >> value;
+				stringstream ssmem;
+				ssmem.str(tmp);
+				string mems;
+				getline(ssmem, mems, ':');
+				mem mem_ = {numBytes, value, pc};
+				memMap[mems] = mem_;
+				memQueue.push(mems);
 				pc += numBytes;
 			}
-            else {
-				if (tmp[0] == '_'){
-			        labelMap[tmp] = pc+1;
-				}
-				pc += 2;
-			}
         }
+		else{
+			pc += 2;
+		}
 		s.clear();
-		aux.clear();
 		ss.clear();
-		ssaux.clear();
 	}
+	labelMap["IO"] = 255;
     fin.clear();
     fin.seekg(0, fin.beg);
-
-	labelMap["IO"] = 254;
-
 	ofstream fout(argv[2]);
 	begin(fout);
 	pc = 0;
-	while (getline(fin, aux)){
-		ssaux.str(aux);
-		getline(ssaux, s, ';');
+	while (getline(fin, s, ';')){
+		if (s.size() == 0)
+			continue;
 		ss.str(s);
 		string op;
 		ss >> op;
-		if (op.size() > 0){
-			if (op[0] == '_' || opCodeMap[op] == 0){
-                string label = op;
-                ss >> op;
-			}
-			switch (opTypeMap[opCodeMap[op]]){
-				case 1:{
-					string op1, op2;
-					ss >> op1 >> op2;
-					newInstruction(pc, (opCodeMap[op] << 3) + opIdMap[op1], fout);
-					if (memMap[op2] != 0){
-						newInstruction(pc, memMap[op2]-1, fout);
-					}
-                    else if (labelMap[op2] != 0){
-                        newInstruction(pc, labelMap[op2]-1, fout);
-                    }
-					else{
-						int n;
-						stringstream ss_(op2);
-						ss_ >> n;
-						newInstruction(pc, n, fout);
-					}
-				}break;
-				case 2:{
-					string op1, op2;
-					ss >> op1 >> op2;
-					newInstruction(pc, (opCodeMap[op] << 3) + opIdMap[op1], fout);
-					newInstruction(pc, (opIdMap[op2] << 5), fout);
-				}break;
-				case 3:{
-					string op1, op2, op3;
-					ss >> op1 >> op2 >> op3;
-					newInstruction(pc, (opCodeMap[op] << 3) + opIdMap[op1], fout);
-					newInstruction(pc, (opIdMap[op2] << 5) + (opIdMap[op3] << 2), fout);
-				}break;
-				case 4:{
-					string op1;
-					ss >> op1;
-					newInstruction(pc, (opCodeMap[op] << 3), fout);
-					if (memMap[op1] != 0){
-						newInstruction(pc, memMap[op1]-1, fout);
-					}
-                    else if (labelMap[op1] != 0){
-                        newInstruction(pc, labelMap[op1]-1, fout);
-                    }
-					else{
-						int n;
-						stringstream ss_(op1);
-						ss_ >> n;
-						newInstruction(pc, n, fout);
-					}
-				}break;
-				case 5:{
-					newInstruction(pc, (opCodeMap[op] << 3), fout);
-					newInstruction(pc, 0, fout);
-				}break;
-				case 6:{
-					int numBytes;
-					long long int initialValue;
-					ss >> numBytes >> initialValue;
-<<<<<<< HEAD
-					while (numBytes-=2)					
-						newInstruction(pc, initialValue, fout);
-=======
-					if (numBytes > 8){ // AQUI ASSUMO QUE TODAS AS ALOCAÇÕES RESERVAM 8 OU MENOS BYTES
-						numBytes = 8;
-					}
-					else if (numBytes%2){ // AQUI ASSUMO QUE TODAS AS ALOCAÇÕES RESERVAM MÚLTIPLOS DE 2 BYTES
-						numBytes++;
-					}
-					for (numBytes--; numBytes >= 0; numBytes--){
-						newInstruction(pc, (int) initialValue >> 8*numBytes, fout);
->>>>>>> 88af5bb6c0dbc119bda24642afa31de4c2c771f2
-					}
-				}break;
-			}
+		if (op[op.size() - 1] == ':')
+            ss >> op;
+		switch (opTypeMap[opCodeMap[op]]){
+			case 1:{
+				string op1, op2;
+				ss >> op1 >> op2;
+				newInstruction(pc, (opCodeMap[op] << 3) + opIdMap[op1], fout);
+				if (memMap[op2].numBytes != 0){
+					newInstruction(pc, memMap[op2].pc, fout);
+				}
+                else if (labelMap[op2] != 0){
+                    newInstruction(pc, labelMap[op2]-1, fout);
+                }
+				else{
+					int n;
+					stringstream ss_(op2);
+					ss_ >> n;
+					newInstruction(pc, n, fout);
+				}
+			}break;
+			case 2:{
+				string op1, op2;
+				ss >> op1 >> op2;
+				newInstruction(pc, (opCodeMap[op] << 3) + opIdMap[op1], fout);
+				newInstruction(pc, (opIdMap[op2] << 5), fout);
+			}break;
+			case 3:{
+				string op1, op2, op3;
+				ss >> op1 >> op2 >> op3;
+				newInstruction(pc, (opCodeMap[op] << 3) + opIdMap[op1], fout);
+				newInstruction(pc, (opIdMap[op2] << 5) + (opIdMap[op3] << 2), fout);
+			}break;
+			case 4:{
+				string op1;
+				ss >> op1;
+				newInstruction(pc, (opCodeMap[op] << 3), fout);
+				if (memMap[op1].numBytes != 0){
+					newInstruction(pc, memMap[op1].pc, fout);
+				}
+                else if (labelMap[op1] != 0){
+                    newInstruction(pc, labelMap[op1]-1, fout);
+                }
+				else{
+					int n;
+					stringstream ss_(op1);
+					ss_ >> n;
+					newInstruction(pc, n, fout);
+				}
+			}break;
+			case 5:{
+				lastInstructions(pc, sp, fout, memMap, memQueue);
+				fin.seekg(0, fin.end);
+			}break;
 		}
+		s.clear();
 		ss.clear();
-		ssaux.clear();
-	}
-	lastInstructions(pc, sp, fout);
-	while (sp < 256){
-		newInstruction(sp, 0, fout); // (???) já não sei mais nada do que tô fazendo
 	}
 	end(fout);
 	fin.close();
