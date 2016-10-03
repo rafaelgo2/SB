@@ -100,6 +100,12 @@ int main(int argc, char *argv[]){
 			ssaux >> op;
 			if (op == ".data"){
 				int numBytes;
+				if (numBytes > 8){
+					numBytes = 8;
+				}
+				else if (numBytes%2){
+					numBytes++;
+				}
 				ssaux >> numBytes;
 				labelMap[tmp] = pc+1;
 				pc += numBytes;
@@ -193,7 +199,7 @@ int main(int argc, char *argv[]){
 					if (numBytes > 8){ // AQUI ASSUMO QUE TODAS AS ALOCAÇÕES RESERVAM 8 OU MENOS BYTES
 						numBytes = 8;
 					}
-					if (numBytes%2){ // AQUI ASSUMO QUE TODAS AS ALOCAÇÕES RESERVAM MÚLTIPLOS DE 2 BYTES
+					else if (numBytes%2){ // AQUI ASSUMO QUE TODAS AS ALOCAÇÕES RESERVAM MÚLTIPLOS DE 2 BYTES
 						numBytes++;
 					}
 					for (numBytes--; numBytes >= 0; numBytes--){
