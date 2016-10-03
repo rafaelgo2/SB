@@ -100,6 +100,12 @@ int main(int argc, char *argv[]){
 			ssaux >> op;
 			if (op == ".data"){
 				int numBytes;
+				if (numBytes > 8){
+					numBytes = 8;
+				}
+				else if (numBytes%2){
+					numBytes++;
+				}
 				ssaux >> numBytes;
 				labelMap[tmp] = pc+1;
 				pc += numBytes;
@@ -187,10 +193,22 @@ int main(int argc, char *argv[]){
 					newInstruction(pc, 0, fout);
 				}break;
 				case 6:{
-					int numBytes, initialValue;
+					int numBytes;
+					long long int initialValue;
 					ss >> numBytes >> initialValue;
+<<<<<<< HEAD
 					while (numBytes-=2)					
 						newInstruction(pc, initialValue, fout);
+=======
+					if (numBytes > 8){ // AQUI ASSUMO QUE TODAS AS ALOCAÇÕES RESERVAM 8 OU MENOS BYTES
+						numBytes = 8;
+					}
+					else if (numBytes%2){ // AQUI ASSUMO QUE TODAS AS ALOCAÇÕES RESERVAM MÚLTIPLOS DE 2 BYTES
+						numBytes++;
+					}
+					for (numBytes--; numBytes >= 0; numBytes--){
+						newInstruction(pc, (int) initialValue >> 8*numBytes, fout);
+>>>>>>> 88af5bb6c0dbc119bda24642afa31de4c2c771f2
 					}
 				}break;
 			}
