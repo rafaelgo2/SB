@@ -1,0 +1,19 @@
+loadc R0 0
+loadc R1 1
+load R2 R1
+loadi R3 IO
+multiply R2 R2 R3
+subtract R3 R3 R1
+jmpz R3 6
+moveSp -2
+storeSp R2
+storei R2 IO
+loadc R4 1
+add R0 R0 R4
+loadc R4 4
+subtract R4 R4 R0
+jumpz R4 36
+loadi R5 IO 
+jmpn R5 36
+jmpp R5 2
+exit
