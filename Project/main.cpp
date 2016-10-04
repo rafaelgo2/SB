@@ -11,13 +11,12 @@
 using namespace std;
 
 typedef struct{
-	int numBytes;
+	int pc, numBytes;
 	long long int value;
-	int pc;
 } mem;
 
 void fillOpCodeMap(map<string, int> &opCodeMap){
-	opCodeMap["exit"] = 0; // REDUNDANTE
+	opCodeMap["exit"] = 0;
 	opCodeMap["loadi"] = 1;
 	opCodeMap["storei"] = 2;
 	opCodeMap["add"] = 3;
@@ -47,14 +46,14 @@ void fillOpCodeMap(map<string, int> &opCodeMap){
 }
 
 void fillRegMap(map<string, int> &regMap){
-	stringstream ss;
-	string s;
-	for (int i = 0; i < 8; i++){
-		ss << "R" << i;
-		ss >> s;
-		regMap[s] = i;
-		ss.clear();
-	}
+	regMap["R0"] = 0;
+	regMap["R1"] = 1;
+	regMap["R2"] = 2;
+	regMap["R3"] = 3;
+	regMap["R4"] = 4;
+	regMap["R5"] = 5;
+	regMap["R6"] = 6;
+	regMap["R7"] = 7;
 }
 
 void begin(ofstream &fout){
@@ -70,8 +69,8 @@ void end(ofstream &fout){
 	fout << "END;";
 }
 
-void newInstruction(int &pc, int n, char ram[256]){
-	ram[pc] = n;
+void newInstruction(int &pc, int n, char RAM[256]){
+	RAM[pc] = n;
 	pc++;
 }
 
@@ -88,86 +87,81 @@ void printMultipleInstructions(int &pc_i, int pc_f, char c, ofstream &fout){
 	pc_i = pc_f + 1;
 }
 
-void lastInstructions(int pc, char ram[256], ofstream &fout, map<string, mem> &memMap, queue<string> &memQueue){
+void printRAM(int pc, char RAM[256], ofstream &fout, map<string, mem> &memMap,
+			  queue<string> &memQueue){
 	while (!memQueue.empty()){
-		string mems = memQueue.front();
+		mem mem_ = memMap[memQueue.front()];
 		memQueue.pop();
-		mem mem_ = memMap[mems];
         if (mem_.numBytes == 8)
             for (int i = 0; i < 8; i++)
-        		newInstruction(pc, 0, ram);
+        		newInstruction(pc, 0, RAM);
         else
             while(mem_.numBytes--)
-		        newInstruction(pc, mem_.value >> (8*mem_.numBytes), ram);
+		        newInstruction(pc, mem_.value >> (8 * mem_.numBytes), RAM);
 	}
 
-	int cnt, cnt_;
-	for(cnt = 0; cnt < pc;){
-		if(ram[cnt] != ram[cnt+1])
-			printInstruction(cnt, ram[cnt], fout);
+	int cnt = 0, cnt_;
+	while(cnt < pc)
+		if(RAM[cnt] != RAM[cnt+1])
+			printInstruction(cnt, RAM[cnt], fout);
 		else{
-			for(cnt_ = cnt; ram[cnt_] == ram[cnt_ + 1] && cnt_ < pc; cnt_++) ;
-			if(cnt_ == pc && ram[cnt_ - 1] == ram[cnt_]) break;
-			printMultipleInstructions(cnt, cnt_, ram[cnt], fout);
-		}	
-	}
-
+			for(cnt_ = cnt; RAM[cnt_] == RAM[cnt_ + 1] && cnt_ < pc; cnt_++) ;
+			if(cnt_ != pc || RAM[cnt_ - 1] != RAM[cnt_])
+				printMultipleInstructions(cnt, cnt_, RAM[cnt], fout);
+			else break;
+		}
 	printMultipleInstructions(cnt, 255, 0, fout);
 }
 
-
 int main(int argc, char *argv[]){
-	int opTypeMap[27] = {0, 1, 1, 2, 2, 2, 2, 4, 1, 1, 2, 2, 2, 1, 1, 4, 3, 4, 1, 1, 5, 4, 4, 1, 3, 3, 1}, pc=0;
+	char RAM[256];
+	int pc=0, opTypeMap[27] = {0, 1, 1, 2, 2, 2, 2, 4, 1, 1, 2, 2, 2, 1, 1, 4,
+							   3, 4, 1, 1, 0, 4, 4, 1, 3, 3, 1};
 	map<string, int> labelMap, opCodeMap, regMap;
-	char ram[256];
-	fill(&(ram[0]), &(ram[255])+1, 0);
 	map<string, mem> memMap;
-	mem io = {2, 0, 254};
-	memMap["IO"] = io;
+	mem IO = {254, 2, 0};
 	queue<string> memQueue;
-	fillOpCodeMap(opCodeMap);
-	fillRegMap(regMap);
-	ifstream fin(argv[1]);
 	string s, saux;
 	stringstream ss, ssaux;
-	while (getline(fin, saux)){
+
+	fill(&(RAM[0]), &(RAM[255])+1, 0);
+	fillOpCodeMap(opCodeMap);
+	fillRegMap(regMap);
+	memMap["IO"] = IO;
+
+	ifstream fin(argv[1]);
+	for (; getline(fin, saux); ss.clear(), ssaux.clear()){
 		ssaux.str(saux);
-		getline(ssaux, s, ';');	
+		getline(ssaux, s, ';');
 		ss.str(s);
-		string tmp;
-		ss >> tmp;
-		if (tmp.size() > 0)
-			if (tmp[tmp.size() - 1] == ':'){
-				tmp.erase(tmp.size() - 1, 1);
+		string label;
+		ss >> label;
+		if (label.size() > 0)
+			if (label[label.size() - 1] == ':'){
+				label.erase(label.size() - 1, 1);
 				string op;
 				ss >> op;
 				if (op == ".data"){
 					int numBytes;
-					ss >> numBytes;
                     long long int value;
-                    ss >> value;
-                    mem mem_ = {numBytes, value, pc};
-					memMap[tmp] = mem_;
-					memQueue.push(tmp);
+					ss >> numBytes >> value;
+                    mem mem_ = {pc, numBytes, value};
+					memMap[label] = mem_;
+					memQueue.push(label);
 					pc += numBytes;
 				}
 				else{
-					labelMap[tmp] = pc + 1;
+					labelMap[label] = pc + 1;
 					pc += 2;
 				}
 			}
 			else pc += 2;
-		ssaux.clear();
-		saux.clear();
-		s.clear();
-		ss.clear();
 	}
 	fin.clear();
 	fin.seekg(0, fin.beg);
+
 	ofstream fout(argv[2]);
-	begin(fout);
-	pc = 0;
-	while (getline(fin, saux)){
+	for (begin(fout), pc = 0; getline(fin, saux); ss.clear(), ssaux.clear()){
 		ssaux.str(saux);
 		getline(ssaux, s, ';');	
 		ss.str(s);
@@ -178,66 +172,60 @@ int main(int argc, char *argv[]){
 				ss >> op;
 			switch (opTypeMap[opCodeMap[op]]){
 				case 0:{
-					newInstruction(pc, 0, ram);
-					newInstruction(pc, 0, ram);
-					lastInstructions(pc, ram, fout, memMap, memQueue);
-					fin.seekg(0, fin.end);
+					newInstruction(pc, (opCodeMap[op] << 3), RAM);
+					newInstruction(pc, 0, RAM);
+					if(opCodeMap[op] == 0){
+						printRAM(pc, RAM, fout, memMap, memQueue);
+						fin.seekg(0, fin.end);
+					}
 				} break;
 				case 1:{
 					string op1, op2;
 					ss >> op1 >> op2;
-					newInstruction(pc, (opCodeMap[op] << 3) + regMap[op1], ram);
+					newInstruction(pc, (opCodeMap[op] << 3) + regMap[op1], RAM);
 					if (memMap[op2].numBytes != 0)
-						newInstruction(pc, memMap[op2].pc, ram);
-					else if (labelMap[op2] != 0){
-						newInstruction(pc, labelMap[op2]-1, ram);
-					}
+						newInstruction(pc, memMap[op2].pc, RAM);
+					else if (labelMap[op2] != 0)
+						newInstruction(pc, labelMap[op2]-1, RAM);
 					else{
-						int n;
 						stringstream ss_(op2);
+						int n;
 						ss_ >> n;
-						newInstruction(pc, n, ram);
+						newInstruction(pc, n, RAM);
 					}
 				} break;
 				case 2:{
 					string op1, op2;
 					ss >> op1 >> op2;
-					newInstruction(pc, (opCodeMap[op] << 3) + regMap[op1], ram);
-					newInstruction(pc, (regMap[op2] << 5), ram);
+					newInstruction(pc, (opCodeMap[op] << 3) + regMap[op1], RAM);
+					newInstruction(pc, (regMap[op2] << 5), RAM);
 				} break;
 				case 3:{
 					string op1, op2, op3;
 					ss >> op1 >> op2 >> op3;
-					newInstruction(pc, (opCodeMap[op] << 3) + regMap[op1], ram);
-					newInstruction(pc, (regMap[op2] << 5) + (regMap[op3] << 2), ram);
+					newInstruction(pc, (opCodeMap[op] << 3) + regMap[op1], RAM);
+					newInstruction(pc, (regMap[op2] << 5) + (regMap[op3] << 2), RAM);
 				} break;
 				case 4:{
 					string op1;
 					ss >> op1;
-					newInstruction(pc, (opCodeMap[op] << 3), ram);
+					newInstruction(pc, (opCodeMap[op] << 3), RAM);
 					if (memMap[op1].numBytes != 0)
-						newInstruction(pc, memMap[op1].pc, ram);
+						newInstruction(pc, memMap[op1].pc, RAM);
 					else if (labelMap[op1] != 0)
-						newInstruction(pc, labelMap[op1]-1, ram);
+						newInstruction(pc, labelMap[op1]-1, RAM);
 					else{
-						int n;
 						stringstream ss_(op1);
+						int n;
 						ss_ >> n;
-						newInstruction(pc, n, ram);
+						newInstruction(pc, n, RAM);
 					}
-				} break;
-				case 5:{
-					newInstruction(pc, (opCodeMap[op] << 3), ram);
-					newInstruction(pc, 0, ram);
 				} break;
 			}
 		}
-		ssaux.clear();
-		saux.clear();
-		s.clear();
-		ss.clear();
 	}
 	end(fout);
+
 	fin.close();
 	fout.close();
 	return 0;
