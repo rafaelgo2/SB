@@ -44,8 +44,8 @@ addi R1 -2 ;						momento em que a ordenacao comeca
 _continueResetSp: moveSp -2 ;
 addi R1 -2 ;
 jmpp R1 _continueResetSp ;
-_printSp: move R1 R0 ;			A pilha eh percorrida para impressao
-loadSp R2 0 ;
+move R1 R0 ;
+_printSp: loadSp R2 0 ;			A pilha eh percorrida para impressao
 storei R2 IO ;
 moveSp 2 ;
 addi R1 -2 ;
