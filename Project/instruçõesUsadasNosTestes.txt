@@ -12,16 +12,16 @@ divide
 load
 store
 	loadc
-clear
+	clear
 	moveSp
-slt
+	slt
 call
 	loadSp
 	storeSp
 ret
 loadRa
 storeRa
-addi
-sgt
-seq
+	addi
+	sgt
+	seq
 	jmpp
