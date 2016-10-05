@@ -1,4 +1,0 @@
-exit;
-
-teste: .data 8 0;
-teste1: .data 2 1;
