@@ -149,7 +149,6 @@ int main(int argc, char *argv[]){
                     mem mem_ = {pc + 1, numBytes, value};
 					memMap[label] = mem_;
 					memQueue.push(label);
-					pc += numBytes;
 				}
 				else{
 					labelMap[label] = pc + 1;
