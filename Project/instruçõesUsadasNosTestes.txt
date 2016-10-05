@@ -1,22 +1,22 @@
 	exit
 	loadi
 	storei
-add
+	add
 	subtract
 	multiply
 divide
-jump
+	jump
 	jmpz
 	jmpn
-move
-	load
+	move
+load
 store
 	loadc
 clear
 	moveSp
 slt
 call
-loadSp
+	loadSp
 	storeSp
 ret
 loadRa
