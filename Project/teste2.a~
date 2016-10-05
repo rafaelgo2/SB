@@ -1,3 +1,4 @@
+clear R0 ;
 loadi R1 IO ;					R1 armazena A
 loadi R2 IO	;					R2 armazena B
 loadi R3 IO	;					R3 armazena C
@@ -26,7 +27,7 @@ loadc R2 1 ;					R2 indica se a pilha esta ordenada
 _orderLoop: loadSp R3 0 ;		A pilha comeca a ser percorrida e ordenada, dois
 loadSp R4 2 ;						valores seguidos sao carregados da pilha
 clear R5 ;
-slt R5 R4 R3 ;
+sgt R5 R4 R3 ;
 jmpz R5 _nextStage ;			Se R5 = 0, os valores carregados estao em ordem
 clear R2 ;						Caso contrario R2 eh alterado e os valores sao
 storeSp R3 2 ;						ordenados na pilha
@@ -39,15 +40,9 @@ sgt R4 R1 R3 ;					Verifica se R1 <= 2, pois o loop deve parar no
 jmpp R4 _orderLoop ;				no penultimo item da pilha
 jmpz R2 _continueOrder ;		Se a pilha foi totalmente percorrida e ainda
 move R1 R0 ;						assim nao estiver em ordem, o loop continua
-_resetSP: move R1 R0 ;			Retorna o ponteiro da pilha para a posicao do
-addi R1 -2 ;						momento em que a ordenacao comeca
-_continueResetSp: moveSp -2 ;
-addi R1 -2 ;
-jmpp R1 _continueResetSp ;
-_printSp: move R1 R0 ;			A pilha eh percorrida para impressao
-loadSp R2 0 ;
+_printSp: loadSp R2 0 ;			A pilha eh percorrida para impressao
 storei R2 IO ;
-moveSp 2 ;
+moveSp -2 ;
 addi R1 -2 ;
 jmpp R1 _printSp ;
 exit ;

@@ -192,6 +192,7 @@ int main(int argc, char *argv[]){
 						stringstream ss_(op2);
 						int n = 0;
 						ss_ >> n;
+						cout << op << " | " << op2 << " | " << n << endl;
 						newInstruction(pc, n, RAM);
 					}
 				} break;

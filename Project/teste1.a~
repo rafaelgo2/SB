@@ -1,0 +1,13 @@
+loadi R0 IO ;				R0 representa a qntde de fatoriais a serem calculados
+clear R1 ;				R1 representa a qntde de fatoriais ja calculados
+_new: loadc R2 1 ;		R2 eh o resultado parcial do fatorial
+loadi R3 IO ;			R3 eh o inteiro (<= 7) cujo fatorial sera calculado
+_loop: multiply R2 R3 ;	Loop que multiplica resultado parcial por proximo fator
+addi R3 -1 ;
+jmpp R3 _loop ;			Enquanto o proximo fator for > 0, o fatorial ainda nao
+storei R2 IO ;				esta pronto
+addi R1 1 ;
+clear R2 ;
+seq R2 R0 R1 ;
+jmpz R2 _new ;			Se R2 == 0, entao R0 != R1 e ainda ha fatoriais a serem
+exit ;						calculados
