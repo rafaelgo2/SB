@@ -1,4 +1,4 @@
-loadc R0 0
+clear R0
 loadi R1 IO
 loadi R2 IO
 loadi R3 IO
@@ -6,47 +6,43 @@ loadi R4 IO
 _new: move R5 R4
 multiply R5 R5
 multiply R5 R1
-move R6 R4
-multiply R6 R2
-move R7 R3
-add R7 R6
-add R7 R5
+multiply R4 R2
+add R4 R3
+add R4 R5
 moveSp -2
-storeSp R7 0
-storei R7 IO
-loadc R4 2
-add R0 R4
+storeSp R4 0
+storei R4 IO
+addi R0 2
 loadi R4 IO
 jmpp R4 _new
 jmpn R4 _new
 jump _order
-_continueOrder: move R1 R0
-loadc R2 -2
-add R1 R2
-_continueLoop: moveSp -2
-add R1 R2
-jmpp R1 _continueLoop
+_continueOrder: move R1 R0 
+addi R1 -2
+_continueOrderLoop: moveSp -2
+addi R1 -2
+jmpp R1 _continueOrderLoop
 _order: move R1 R0
-loadc R2 0
+loadc R2 1;                     Sinal que indica se a pilha esta ordenada
 _orderLoop: loadSp R3 0
 loadSp R4 2
-move R5 R3
-subtract R5 R4
-jmpp R5 _nextStage
-loadc R2 1
+clear R5
+sgt R5 R4 R3
+jmpz R5 _nextStage
+clear R2
 storeSp R3 2
 storeSp R4 0
 _nextStage: moveSp 2
-loadc R5 -2
-add R1 R5
-add R5 R1
-jmpp R5 _orderLoop
-jmpp R2 _continueOrder
+addi R1 -2
+loadc R3 3
+clear R4
+sgt R4 R1 R3
+jmpp R4 _orderLoop
+jmpz R2 _continueOrder
 move R1 R0
-loadc R2 -2
-_printSp: loadSp R3 0
-storei R3 IO
+_printSp: loadSp R2 0
+storei R2 IO
 moveSp -2
-add R1 R2
-jmpp R1 _printSp; Deve ter bug aqui
+addi R1 -2
+jmpp R1 _printSp
 exit
