@@ -1,0 +1,6 @@
+loadi R0 one;
+one: .data 2 1
+load R0 R1;
+zero: .data 2 0;
+loadi R4 zero;
+exit;

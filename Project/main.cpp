@@ -42,6 +42,7 @@ void fillOpCodeMap(map<string, int> &opCodeMap){
 	opCodeMap["sgt"] = 24;
 	opCodeMap["seq"] = 25;
 	opCodeMap["jmpp"] = 26;
+	opCodeMap[".data"] = 27;
 }
 
 void fillRegMap(map<string, int> &regMap){
@@ -152,7 +153,7 @@ int main(int argc, char *argv[]){
 		ss >> op;
 		if (op.size() > 0){
 			if (op[op.size() - 1] == ':')
-				ss >> op;
+				ss >> op;		
 			switch (opTypeMap[opCodeMap[op]]){
 				case 0:{
 					newInstruction(pc, (opCodeMap[op] << 3), RAM);
