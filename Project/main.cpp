@@ -6,7 +6,6 @@
 #include <cstring>
 #include <iomanip>
 #include <string>
-#include <queue>
 
 using namespace std;
 
@@ -85,14 +84,7 @@ void printMultipleInstructions(int pc_i, int pc_f, char c, ofstream &fout){
 		 << bitset<8>(c) << " ;" << endl;
 }
 
-void printRAM(int pc, char RAM[256], ofstream &fout, map<string, mem> &memMap,
-			  queue<string> &memQueue){
-	while(!memQueue.empty()){
-		mem mem_ = memMap[memQueue.front()];
-		while(mem_.numBytes--)
-	        newInstruction(pc, mem_.value >> (8 * mem_.numBytes), RAM);
-		memQueue.pop();
-	}
+void printRAM(int pc, char RAM[256], ofstream &fout, map<string, mem> &memMap){
 	for (int cnt = 0; cnt < 256; cnt++)
 		if(RAM[cnt] != RAM[cnt+1])
 			printInstruction(cnt, RAM[cnt], fout);
@@ -107,15 +99,13 @@ void printRAM(int pc, char RAM[256], ofstream &fout, map<string, mem> &memMap,
 int main(int argc, char *argv[]){
 	char RAM[256] = {0};
 	int pc=0;
-	int opTypeMap[27] = {0, 1, 1, 2, 2, 2, 2, 4, 1, 1, 2, 2, 2, 1, 1, 4,
-							   			3, 4, 1, 1, 0, 4, 4, 1, 3, 3, 1};
+	int opTypeMap[28] = {0, 1, 1, 2, 2, 2, 2, 4, 1, 1, 2, 2, 2, 1, 1, 4,
+							   			3, 4, 1, 1, 0, 4, 4, 1, 3, 3, 1, 5};
 	map<string, int> labelMap, opCodeMap, regMap;
 	map<string, mem> memMap;
 	mem IO = {255, 2, 0};
 	memMap["IO"] = IO;
-	queue<string> memQueue;
 
-	//fill(&(RAM[0]), &(RAM[255])+1, 0);
 	fillOpCodeMap(opCodeMap);
 	fillRegMap(regMap);
 
@@ -139,7 +129,6 @@ int main(int argc, char *argv[]){
 					ss >> numBytes >> value;
                     mem mem_ = {pc + 1, numBytes, value};
 					memMap[label] = mem_;
-					memQueue.push(label);
 					pc += numBytes;
 				}
 				else{
@@ -169,7 +158,7 @@ int main(int argc, char *argv[]){
 					newInstruction(pc, (opCodeMap[op] << 3), RAM);
 					newInstruction(pc, 0, RAM);
 					if(opCodeMap[op] == 0){
-						printRAM(pc, RAM, fout, memMap, memQueue);
+						printRAM(pc, RAM, fout, memMap);
 						fin.seekg(0, fin.end);
 					}
 				} break;
@@ -215,6 +204,13 @@ int main(int argc, char *argv[]){
 						newInstruction(pc, n, RAM);
 					}
 				} break;
+				case 5:{
+					int numBytes;
+                    long long int value;
+					ss >> numBytes >> value;
+					while(numBytes--)
+						newInstruction(pc, value >> (8 * numBytes), RAM);
+				}
 			}
 		}
 	}
