@@ -74,60 +74,53 @@ void newInstruction(int &pc, int n, char RAM[256]){
 	pc++;
 }
 
-void printInstruction(int &pc, char c, ofstream &fout){
+void printInstruction(int pc, char c, ofstream &fout){
 	fout << hex << uppercase << setfill('0') << setw(2) << pc << " : "
 		 << bitset<8>(c) << " ;" << endl;
-	pc++;
 }
 
-void printMultipleInstructions(int &pc_i, int pc_f, char c, ofstream &fout){
+void printMultipleInstructions(int pc_i, int pc_f, char c, ofstream &fout){
 	fout << '[' << hex << uppercase << setfill('0') << setw(2) << pc_i << ".."
 		 << hex << uppercase << setfill('0') << setw(2) << pc_f << "] : "
 		 << bitset<8>(c) << " ;" << endl;
-	pc_i = pc_f + 1;
 }
 
 void printRAM(int pc, char RAM[256], ofstream &fout, map<string, mem> &memMap,
 			  queue<string> &memQueue){
-	for (; !memQueue.empty(); memQueue.pop()){
+	while(!memQueue.empty()){
 		mem mem_ = memMap[memQueue.front()];
-        if (mem_.numBytes == 8)
-            for (int i = 0; i < 8; i++)
-        		newInstruction(pc, 0, RAM);
-        else
-            while(mem_.numBytes--)
-		        newInstruction(pc, mem_.value >> (8 * mem_.numBytes), RAM);
+		while(mem_.numBytes--)
+	        newInstruction(pc, mem_.value >> (8 * mem_.numBytes), RAM);
+		memQueue.pop();
 	}
-
-	int cnt = 0, cnt_;
-	while(cnt < pc)
+	for (int cnt = 0; cnt < 256; cnt++)
 		if(RAM[cnt] != RAM[cnt+1])
 			printInstruction(cnt, RAM[cnt], fout);
 		else{
-			for(cnt_ = cnt; RAM[cnt_] == RAM[cnt_ + 1] && cnt_ < pc; cnt_++) ;
-			if(cnt_ != pc || RAM[cnt_ - 1] != RAM[cnt_])
-				printMultipleInstructions(cnt, cnt_, RAM[cnt], fout);
-			else break;
+			int cnt_;
+			for(cnt_ = cnt+2; cnt_ < 256 && RAM[cnt_] == RAM[cnt]; cnt_++);
+			printMultipleInstructions(cnt, cnt_-1, RAM[cnt], fout);
+			cnt = cnt_-1;			
 		}
-	printMultipleInstructions(cnt, 255, 0, fout);
 }
 
 int main(int argc, char *argv[]){
-	char RAM[256];
-	int pc=0, opTypeMap[27] = {0, 1, 1, 2, 2, 2, 2, 4, 1, 1, 2, 2, 2, 1, 1, 4,
-							   3, 4, 1, 1, 0, 4, 4, 1, 3, 3, 1};
+	char RAM[256] = {0};
+	int pc=0;
+	int opTypeMap[27] = {0, 1, 1, 2, 2, 2, 2, 4, 1, 1, 2, 2, 2, 1, 1, 4,
+							   			3, 4, 1, 1, 0, 4, 4, 1, 3, 3, 1};
 	map<string, int> labelMap, opCodeMap, regMap;
 	map<string, mem> memMap;
 	mem IO = {255, 2, 0};
+	memMap["IO"] = IO;
 	queue<string> memQueue;
-	string s, saux;
-	stringstream ss, ssaux;
 
-	fill(&(RAM[0]), &(RAM[255])+1, 0);
+	//fill(&(RAM[0]), &(RAM[255])+1, 0);
 	fillOpCodeMap(opCodeMap);
 	fillRegMap(regMap);
-	memMap["IO"] = IO;
 
+	string s, saux;
+	stringstream ss, ssaux;
 	ifstream fin(argv[1]);
 	for (; getline(fin, saux); ss.clear(), ssaux.clear()){
 		ssaux.str(saux);
@@ -144,8 +137,6 @@ int main(int argc, char *argv[]){
 					int numBytes;
                     long long int value;
 					ss >> numBytes >> value;
-					if(numBytes > 8) numBytes = 8;
-					if(numBytes % 2) numBytes++;
                     mem mem_ = {pc + 1, numBytes, value};
 					memMap[label] = mem_;
 					memQueue.push(label);
@@ -158,6 +149,8 @@ int main(int argc, char *argv[]){
 			}
 			else pc += 2;
 	}
+	saux.clear();
+
 	fin.clear();
 	fin.seekg(0, fin.beg);
 
@@ -225,9 +218,11 @@ int main(int argc, char *argv[]){
 			}
 		}
 	}
+	saux.clear();
 	end(fout);
-
+	fin.clear();
 	fin.close();
+	fout.clear();
 	fout.close();
 	return 0;
 }
