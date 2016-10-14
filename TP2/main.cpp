@@ -5,7 +5,8 @@
 using namespace std;
 
 int main(int argc, char *argv[]){
-   
-    
-    return 0;
+	Linker::makeInstance(argv[1], argc - 2);
+	Linker& linker = Linker::getInstance();
+	linker.createModules(argc, argv);
+	return 0;
 }

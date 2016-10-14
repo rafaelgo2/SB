@@ -8,13 +8,14 @@
 using namespace std;
 
 class Module{
+public:
+    Module(char *fileName);
+	void start();
 private:
     int pc;
     char *fileName;
     char mem[256];
-    map<string, int> privateLabelMap;
-private:
-    Module(char *fileName);
+    map<string, int> privateMap;
 };
 
 #endif /* Module_hpp */

@@ -1,17 +1,5 @@
-Module.cpp:3:8: error: expected unqualified-id
-Module(char *fileName){
-       ^
-Module.cpp:3:8: error: expected ')'
-Module.cpp:3:7: note: to match this '('
-Module(char *fileName){
-      ^
-2 errors generated.
-main.cpp:2:10: error: 'Linker.hpp' file not found with <angled> include; use "quotes" instead
-#include <Linker.hpp>
-         ^~~~~~~~~~~~
-         "Linker.hpp"
-main.cpp:3:10: error: 'Module.hpp' file not found with <angled> include; use "quotes" instead
-#include <Module.hpp>
-         ^~~~~~~~~~~~
-         "Module.hpp"
-2 errors generated.
+/tmp/ccmb6v5h.o: In function `Linker::makeInstance(char*, int)':
+Linker.cpp:(.text+0x29): undefined reference to `Linker::instance'
+/tmp/cceLkPUL.o: In function `Linker::getInstance()':
+main.cpp:(.text._ZN6Linker11getInstanceEv[_ZN6Linker11getInstanceEv]+0x7): undefined reference to `Linker::instance'
+collect2: error: ld returned 1 exit status
