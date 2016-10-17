@@ -1,13 +1,15 @@
 #include "Linker.hpp"
 
-void Linker::makeInstance(char *fileName, int capacity){
-	Linker::instance = Linker(fileName, capacity);
+Linker &Linker::getInstance(){
+	if (instance == NULL){
+			instance = new Linker();
+	}
+	return *instance;
 }
 
-Linker::Linker(char *fileName, int capacity){
-    this->fileName = fileName;
-    this->capacity = capacity;
-    this->module.reserve(capacity);
+void Linker::makeInstance(char *_fileName, int _capacity){
+	fileName = _fileName;
+	capacity = _capacity;
 }
 
 void Linker::createModules(int argc, char *argv[]){
