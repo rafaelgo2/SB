@@ -7,8 +7,13 @@
 
 using namespace std;
 
+typedef struct{
+	int numBytes;
+	long long int value;
+} Memory;
+
 class Module{
-public:
+public:	
     Module(char *fileName);
 	void start();
 private:
@@ -16,6 +21,7 @@ private:
     char *fileName;
     char mem[256];
     map<string, int> privateMap;
+	vector<Memory> privateMemory;
 };
 
 #endif /* Module_hpp */

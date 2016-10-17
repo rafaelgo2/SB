@@ -1,5 +1,30 @@
+<<<<<<< HEAD
 /tmp/ccEVQ8u6.o: In function `Linker::makeInstance(char*, int)':
 Linker.cpp:(.text+0x29): undefined reference to `Linker::instance'
 /tmp/ccYVZhDb.o: In function `Linker::getInstance()':
 main.cpp:(.text._ZN6Linker11getInstanceEv[_ZN6Linker11getInstanceEv]+0x7): undefined reference to `Linker::instance'
 collect2: error: ld returned 1 exit status
+=======
+Linker.cpp:3:9: error: redefinition of ‘static Linker& Linker::getInstance()’
+ Linker &Linker::getInstance(){
+         ^
+Linker.hpp:15:17: note: ‘static Linker& Linker::getInstance()’ previously defined here
+Linker.cpp: In static member function ‘static void Linker::makeInstance(char*, int)’:
+Linker.cpp:11:2: error: invalid use of member ‘Linker::fileName’ in static member function
+  fileName = _fileName;
+  ^
+Linker.hpp:26:11: note: declared here
+  static Linker &getInstance();
+           ^
+Linker.cpp:12:2: error: invalid use of member ‘Linker::capacity’ in static member function
+  capacity = _capacity;
+  ^
+Linker.hpp:28:9: note: declared here
+In file included from main.cpp:2:0:
+Linker.hpp:24:2: error: expected ‘:’ before ‘static’
+  static Linker* instance;
+  ^
+Linker.hpp:26:2: error: expected ‘:’ before ‘static’
+  static Linker &getInstance();
+  ^
+>>>>>>> 5910b55847ae666bf633909b74009cf7bf0b8d75
