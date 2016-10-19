@@ -1,18 +1,30 @@
-#include <iostrea>
+#include <iostream>
 #include <thread>
 
 using namespace std;
 
-void count(int &a, int i){
-    while(a != 99999*i){
+int a = 0;
+thread *showV;
+
+void count(int i){
+    while(abs(a) < 99){
         a += i;
     }
 }
 
+void show(){
+    while(abs(a) < 99){
+        cout << a << endl;
+    }
+}
+
 int main(){
-    int a = 0;
-    thread increment(a, 1);
-    thread decrement(a, -1);
-    thread show()
+    thread increment(count, 1);
+    thread decrement(count, -1);
+    showV = new thread(show);
+    increment.join();
+    decrement.join();
+    showV->join();
+    cout << "Resultado: " << a << endl;
     return 0;
 }
