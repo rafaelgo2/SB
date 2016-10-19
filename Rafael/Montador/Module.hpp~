@@ -9,6 +9,7 @@ using namespace std;
 
 typedef struct{
 	string name;
+	int sSize;
 	int numBytes;
 	long long int value;
 	int pc;
@@ -16,11 +17,13 @@ typedef struct{
 
 typedef struct{
 	string s;	
+	int sSize;
 	int pc;
 } Dependency;
 
 typedef struct{
 	string name;
+	int sSize;
 	int pc;
 } Label;
 

@@ -106,7 +106,7 @@ void Module::newInstruction(char n){
 }
 
 void Module::newInstruction(string s, char n){
-	Dependency newDependency = {s, mem.size()};
+	Dependency newDependency = {mem.size(), s};
 	dependency.push_back(newDependency);
 	newInstruction(n);
 }
