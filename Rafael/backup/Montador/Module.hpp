@@ -45,7 +45,7 @@ private:
 	char *inFile, *outFile;
 
 	map<string, int> opCodeMap;
-	int opTypeMap[27];
+	int opTypeMap[28];
 
 	vector<char> mem;
 	vector<Label> label;

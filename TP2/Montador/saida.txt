@@ -1,5 +1,5 @@
 Module
-52 6 0 13
+54 6 1 10
 Label
 _initR 12
 Label
@@ -12,10 +12,8 @@ Label
 _endWhile 48
 Label
 _endS 50
-Dependency
--1 1
-Dependency
--2 3
+Data
+negOne -1 2 
 Dependency
 _initR 7
 Dependency
@@ -24,8 +22,6 @@ Dependency
 IO 13
 Dependency
 _endR 19
-Dependency
--2 21
 Dependency
 _initR 25
 Dependency
@@ -40,9 +36,9 @@ Dependency
 IO 49
 Mem
 01101110
-00000000
+11111111
 01111000
-00000000
+11111110
 10011110
 00000000
 10001000
@@ -60,7 +56,7 @@ Mem
 01000001
 00000000
 01111000
-00000000
+11111110
 10011000
 00000000
 00111000
@@ -90,4 +86,6 @@ Mem
 00010011
 00000000
 10100000
+00000000
+00000000
 00000000

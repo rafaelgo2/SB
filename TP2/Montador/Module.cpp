@@ -43,7 +43,10 @@ void writeMem(ofstream &fout, vector<char> &mem){
 }
 
 bool isANumber(string s){
-	for (int i = 0; i < s.size(); i++){
+	int init = 0;
+	if (s[0] == '-')
+		init = 1;
+	for (int i = init; i < s.size(); i++){
 		if ((s[i] < '0') || (s[i] > '9'))
 			return false;
 	}
@@ -87,6 +90,7 @@ void Module::fillOpCodeMap(){
 	opCodeMap["sgt"] = 24;
 	opCodeMap["seq"] = 25;
 	opCodeMap["jmpp"] = 26;
+	opCodeMap[".data"] = 27;
 }
 
 void Module::fillOpTypeMap(){
@@ -117,6 +121,7 @@ void Module::fillOpTypeMap(){
 	opTypeMap[24] = 3;
 	opTypeMap[25] = 3;
 	opTypeMap[26] = 1;
+	opTypeMap[27] = 5;
 }
 
 void Module::newInstruction(char n){
@@ -149,7 +154,7 @@ void Module::start(){
 		ss.str(s);
 		string labelName;
 		ss >> labelName;
-		if (labelName.size() > 0)
+		if (labelName.size() > 0){
 			if (labelName[labelName.size() - 1] == ':'){
 				labelName.erase(labelName.size() - 1, 1);
 				string op;
@@ -169,7 +174,9 @@ void Module::start(){
 					pc += 2;
 				}
 			}
-			else pc += 2;
+			else
+				pc += 2;
+		}	
 	}
 	mem.reserve(pc);
 	fin.close();

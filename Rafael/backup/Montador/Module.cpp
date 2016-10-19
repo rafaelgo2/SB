@@ -1,40 +1,61 @@
 #include "Module.hpp"
 #include <fstream>
 #include <sstream>
+#include <bitset>
+#include <iostream>
 
 void writeData(ofstream &fout, Data &data){
-	int sSize = data.name.size();
-	fout.write(reinterpret_cast<const char *>(&sSize), sizeof(int));
-	fout.write(data.name.c_str(), data.name.size());
-	fout.write(reinterpret_cast<const char *>(&data.numBytes), sizeof(int));
-	fout.write(reinterpret_cast<const char *>(&data.value), sizeof(long long int));
-	fout.write(reinterpret_cast<const char *>(&data.pc), sizeof(int));	
+	fout << "Data" << endl
+		 << data.name << " "
+		 << data.numBytes << " "
+		 << data.value << " "
+		 << endl;
 }
 
 void writeDependency(ofstream &fout, Dependency &dependency){
-	int sSize = dependency.s.size();
-	fout.write(reinterpret_cast<const char *>(&sSize), sizeof(int));
-	fout.write(dependency.s.c_str(), dependency.s.size());
-	fout.write(reinterpret_cast<const char *>(&dependency.pc), sizeof(int));
+	fout << "Dependency" << endl
+		 << dependency.s << " "
+		 << dependency.pc
+		 << endl;
 }
 
 void writeLabel(ofstream &fout, Label &label){
-	int sSize = label.name.size();
-	fout.write(reinterpret_cast<const char *>(&sSize), sizeof(int));
-	fout.write(label.name.c_str(), label.name.size());
-	fout.write(reinterpret_cast<const char*>(&label.pc), sizeof(int));
+	fout << "Label" << endl
+		 << label.name << " "
+		 << label.pc
+		 << endl;
 }
 
 void writeModuleHeader(ofstream &fout, ModuleHeader &moduleHeader){
-	fout.write(reinterpret_cast<const char *>(&moduleHeader), sizeof(ModuleHeader));
+	fout << "Module" << endl
+		 << moduleHeader.memSize << " "
+		 << moduleHeader.labelSize << " "
+		 << moduleHeader.dataSize << " "
+		 << moduleHeader.dependencySize
+		 << endl;
+}
+
+void writeMem(ofstream &fout, vector<char> &mem){
+	fout << "Mem" << endl;
+	for (int i = 0; i < mem.size(); i++){
+		fout << bitset<8>(mem[i]) << endl;
+	}
 }
 
 bool isANumber(string s){
-	for (int i = 0; i < s.size(); i++){
+	int init = 0;
+	if (s[0] == '-')
+		init = 1;
+	for (int i = init; i < s.size(); i++){
 		if ((s[i] < '0') || (s[i] > '9'))
 			return false;
 	}
 	return true;
+}
+
+
+bool isAReg(string s){
+	return ((s.size() == 2) && (s[0] == 'R') && (s[1] >= '0') && (s[1] <= '9')) ;
 }
 
 int getReg(string s){
@@ -69,6 +90,7 @@ void Module::fillOpCodeMap(){
 	opCodeMap["sgt"] = 24;
 	opCodeMap["seq"] = 25;
 	opCodeMap["jmpp"] = 26;
+	opCodeMap[".data"] = 27;
 }
 
 void Module::fillOpTypeMap(){
@@ -99,25 +121,29 @@ void Module::fillOpTypeMap(){
 	opTypeMap[24] = 3;
 	opTypeMap[25] = 3;
 	opTypeMap[26] = 1;
+	opTypeMap[27] = 5;
 }
 
 void Module::newInstruction(char n){
 	mem.push_back(n);
+	cout << "\t new instruction " << mem.size() << endl;
 }
 
 void Module::newInstruction(string s, char n){
-	Dependency newDependency = {mem.size(), s};
+	Dependency newDependency = {s, mem.size()};
 	dependency.push_back(newDependency);
+	cout << s << " " << mem.size() << endl;
 	newInstruction(n);
 }
 
 Module::Module(char *inFile, char *outFile){
 	this->inFile = inFile;
 	this->outFile = outFile;
+	this->fillOpTypeMap();
+	this->fillOpCodeMap();
 }
 
 void Module::start(){
-	fillOpCodeMap();
 	int pc = 0;
 	ifstream fin(inFile);
 	string s, saux;
@@ -128,7 +154,7 @@ void Module::start(){
 		ss.str(s);
 		string labelName;
 		ss >> labelName;
-		if (labelName.size() > 0)
+		if (labelName.size() > 0){
 			if (labelName[labelName.size() - 1] == ':'){
 				labelName.erase(labelName.size() - 1, 1);
 				string op;
@@ -137,16 +163,20 @@ void Module::start(){
 					int numBytes;
                     long long int value;
 					ss >> numBytes >> value;
-                    Data data_ = {labelName, numBytes, value, -1};
+                    Data data_ = {labelName, numBytes, value};
 					data.push_back(data_);
+					cout << labelName << " " << numBytes << " " << value << endl;
 				}
 				else{
 					Label label_ = {labelName, pc};
 					label.push_back(label_);
+					cout << labelName << " " << pc << endl;
 					pc += 2;
 				}
 			}
-			else pc += 2;
+			else
+				pc += 2;
+		}	
 	}
 	mem.reserve(pc);
 	fin.close();
@@ -166,6 +196,7 @@ void Module::finish(){
 		if (op.size() > 0){
 			if (op[op.size() - 1] == ':')
 				ss >> op;
+			cout << op << " " << opCodeMap[op] << " " << opTypeMap[opCodeMap[op]] << endl;
 			switch (opTypeMap[opCodeMap[op]]){
 				case 0:{
 					newInstruction(opCodeMap[op] << 3);
@@ -227,4 +258,5 @@ void Module::write(){
 		writeData(fout, data[i]);
 	for (int i = 0; i < dependency.size(); i++)
 		writeDependency(fout, dependency[i]);
+	writeMem(fout, mem);
 }

@@ -24,3 +24,4 @@ _initS: loadi R0 IO ;
         jump _while ;
     _endWhile: storei R3 IO ;   Escreva o valor encontrado 
 _endS: ret ;
+negOne: .data -1 2;

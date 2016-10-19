@@ -9,21 +9,17 @@ using namespace std;
 
 typedef struct{
 	string name;
-	int sSize;
 	int numBytes;
 	long long int value;
-	int pc;
 } Data;
 
 typedef struct{
 	string s;	
-	int sSize;
 	int pc;
 } Dependency;
 
 typedef struct{
 	string name;
-	int sSize;
 	int pc;
 } Label;
 
@@ -49,7 +45,7 @@ private:
 	char *inFile, *outFile;
 
 	map<string, int> opCodeMap;
-	int opTypeMap[27];
+	int opTypeMap[28];
 
 	vector<char> mem;
 	vector<Label> label;
