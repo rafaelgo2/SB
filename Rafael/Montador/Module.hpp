@@ -11,7 +11,6 @@ typedef struct{
 	string name;
 	int numBytes;
 	long long int value;
-	int pc;
 } Data;
 
 typedef struct{
