@@ -1,7 +1,7 @@
 #ifndef Module_hpp
 #define Module_hpp
 
-#include <map>
+
 #include <vector>
 #include <string>
 

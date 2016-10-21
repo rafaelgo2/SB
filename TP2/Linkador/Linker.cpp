@@ -1,20 +1,19 @@
-#include "Linker.hpp"
+#include <fstream>
 
-Linker &Linker::getInstance(){
-	if (instance == NULL){
-			instance = new Linker();
-	}
-	return *instance;
+Linker *Linker::instance = NULL;
+
+Linker *Linker::getInstance(){
+	if (instance == NULL)
+		instance = new Linker();
+	return instance;
 }
 
-void Linker::makeInstance(char *_fileName, int _capacity){
-	fileName = _fileName;
-	capacity = _capacity;
-}
-
-void Linker::createModules(int argc, char *argv[]){
-	for (int i = 2; i <= argc; i++){
-		this->createModule(argv[i]);
-		this->getModule(this->getModuleSize() - 1).start();
+void startInstance(int argc, char *argv[]){
+	int objModuleSize = argc-2;	
+	objModule.reserve(objModuleSize);
+	ObjectModule *obj;
+	for (int i = 2; i < objModuleSize; i++){
+		obj = new ObjectModule(argv[i]);
+		objModule.push_back(obj);
 	}
 }
