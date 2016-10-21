@@ -1,40 +1,21 @@
-Module
-54 6 1 10
-Label
+52 6 1 10
 _initR 12
-Label
 _endR 26
-Label
 _initS 28
-Label
 _while 30
-Label
 _endWhile 48
-Label
 _endS 50
-Data
 negOne -1 2 
-Dependency
 _initR 7
-Dependency
 _initS 9
-Dependency
 IO 13
-Dependency
 _endR 19
-Dependency
 _initR 25
-Dependency
 IO 29
-Dependency
 _endWhile 37
-Dependency
 _endWhile 43
-Dependency
 _while 47
-Dependency
 IO 49
-Mem
 01101110
 11111111
 01111000
@@ -86,6 +67,4 @@ Mem
 00010011
 00000000
 10100000
-00000000
-00000000
 00000000

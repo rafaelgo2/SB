@@ -1,0 +1,45 @@
+Linker.cpp:3:1: error: ‘Linker’ does not name a type
+ Linker *Linker::instance = NULL;
+ ^
+Linker.cpp:5:1: error: ‘Linker’ does not name a type
+ Linker *Linker::getInstance(){
+ ^
+Linker.cpp:11:6: error: ‘Linker’ has not been declared
+ void Linker::startInstance(int argc, char *argv[]){
+      ^
+Linker.cpp: In function ‘void startInstance(int, char**)’:
+Linker.cpp:12:2: error: ‘pc’ was not declared in this scope
+  pc = 0;
+  ^
+Linker.cpp:14:2: error: invalid use of ‘this’ in non-member function
+  this->argc = argc;
+  ^
+Linker.cpp:15:2: error: invalid use of ‘this’ in non-member function
+  this->argv = argv;
+  ^
+Linker.cpp:17:2: error: ‘objModule’ was not declared in this scope
+  objModule.reserve(objModuleSize);
+  ^
+Linker.cpp:18:2: error: ‘ObjectModule’ was not declared in this scope
+  ObjectModule *obj;
+  ^
+Linker.cpp:18:16: error: ‘obj’ was not declared in this scope
+  ObjectModule *obj;
+                ^
+Linker.cpp:20:13: error: expected type-specifier before ‘ObjectModule’
+   obj = new ObjectModule(argv[i], pc);
+             ^
+Linker.cpp:20:13: error: expected ‘;’ before ‘ObjectModule’
+Linker.cpp:21:21: error: ‘labelMap’ was not declared in this scope
+   obj->fillLabelMap(labelMap); 
+                     ^
+Linker.cpp:26:20: error: ‘dataMap’ was not declared in this scope
+   obj->fillDataMap(dataMap, pc);
+                    ^
+Linker.cpp: At global scope:
+Linker.cpp:30:6: error: ‘Linker’ has not been declared
+ void Linker::resolveDependencies(){
+      ^
+Linker.cpp:34:6: error: ‘Linker’ has not been declared
+ void Linker::writeMemory(){
+      ^
