@@ -30,16 +30,15 @@ typedef struct{
 
 typedef struct{
 	int memSize;
-	int labelSize;
-	int dataSize;
-	int inDependencySize;
-	int outDependencySize;	
+	unsigned long labelSize;
+	unsigned long dataSize;
+	unsigned long inDependencySize;
+	unsigned long outDependencySize;
 } ModuleHeader;
 
 class Module{
 public:	
     Module(char *inFile, char *outFile);
-	void start();
 	void process();
 	void write();
 private:
