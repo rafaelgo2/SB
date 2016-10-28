@@ -19,7 +19,7 @@ typedef struct{
 class Linker{
 private:
 	int argc;
-	char *argv[];
+	char **argv;
 	vector<ObjectModule*> objModule;
 	map<string, Label> labelMap;
 	map<string, Data> dataMap;

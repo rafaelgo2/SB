@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include "Linker.hpp"
 
 using namespace std;
 
@@ -22,6 +23,8 @@ private:
 	vector<Dependency> dependency;
 	int startPosition;
 public:
-	ObjectModule(int startPosition);	
-	int getMemorySize() { return mem.size(); }
+	ObjectModule(int startPosition, int pc);
+	unsigned long getMemorySize() { return mem.size(); }
+	void fillLabelMap(map<string, Label> labelMap);
+	void fillDataMap( map<string, Data> label, int pc);
 };
