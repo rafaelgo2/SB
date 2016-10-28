@@ -5,17 +5,6 @@
 
 using namespace std;
 
-typedef struct{
-	string name;
-	int pc;
-} Label;
-
-typedef struct{
-	string name;
-	int numBytes;
-	long long int value;
-} Data;
-
 class Linker{
 private:
 	int argc;
