@@ -1,0 +1,26 @@
+loadc R6 -1 ;
+moveSp -2 ;
+storeSp R6 0 ;                  Marcador de Fundo de Pilha
+call _initR ;
+call _initS ;
+exit ;
+_initR: loadi R0 IO ;
+    move R1 R0 ;
+    subtract R1 R6 ;
+    jmpz R1 _endR ;
+    moveSp -2 ;
+    storeSp R0 0 ;
+    jump _initR ;
+_endR: ret ;
+_initS: loadi R0 IO ;
+    _while: loadSp R3 0 ;       Enquanto R3 diferente de -1
+        move R4 R3 ;
+        subtract R4 R6 ;
+        jmpz R4 _endWhile ;
+        move R4 R3 ;
+        subtract R4 R0 ;
+        jmpz R4 _endWhile ;     Se Topo da Pilha igual ao IO
+        moveSp 2 ;              Desce a pilha
+        jump _while ;
+    _endWhile: storei R3 IO ;   Escreva o valor encontrado 
+_endS: ret ;

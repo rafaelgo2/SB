@@ -1,6 +1,7 @@
 #include <fstream>
 #include <bitset>
 #include <iomanip>
+#include <algorithm>
 #include "Linker.hpp"
 
 using namespace std;
@@ -9,6 +10,7 @@ Linker::Linker(int argc, char *argv[]){
 	fileName = argv[1];
 	pc = 0;
 	objModule.reserve( (unsigned long) argc-2);
+	fill(mem, mem+256, 0);
 	for (int i = 2; i < argc; i++){
 		objModule.push_back(ObjectModule(argv[i] , pc, i-2,
 								labelMap, dataVec, mem));
@@ -41,7 +43,7 @@ void Linker::writeMemory(){
 	for (int i = 0; i < 256; i++){
 		int init = i;
 		char inst = mem[i];		
-		while((mem[i] == inst) && (i<256))
+		while((mem[i+1] == inst) && (i<256))
 			i++;
 		if (i == init){
 			fout << hex << uppercase << setfill('0') << setw(2) << i << " : "
