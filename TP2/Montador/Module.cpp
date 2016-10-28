@@ -33,8 +33,9 @@ void writeModuleHeader(ofstream &fout, ModuleHeader &moduleHeader){
 }
 
 void writeMem(ofstream &fout, char mem[256], int memSize){
+	int mask = (1 << 8) - 1;
 	for (int i = 0; i < memSize; i++)
-		fout << bitset<8>(mem[i]) << endl;
+		fout << (mem[i]&mask) << endl;
 }
 
 bool isANumber(string s){
