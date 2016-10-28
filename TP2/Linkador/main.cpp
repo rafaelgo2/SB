@@ -3,8 +3,9 @@
 using namespace std;
 
 int main(int argc, char *argv[]){
-	Linker *linker = new Linker(argc, argv);
-	linker->resolveDependencies();
-	linker->writeMemory();
+	Linker linker = Linker(argc, argv);
+	linker.initializeData();
+	linker.resolveDependencies();
+	linker.writeMemory();
 	return 0;
 }

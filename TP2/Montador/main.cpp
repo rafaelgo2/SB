@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Module.hpp"
 
 using namespace std;

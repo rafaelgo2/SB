@@ -4,10 +4,10 @@
 
 using namespace std;
 
-typedef struct{
-    string name;
-    int pc;
-} Label;
+enum Type{
+	IN,
+	OUT
+};
 
 typedef struct{
     string name;
@@ -15,28 +15,38 @@ typedef struct{
     long long int value;
 } Data;
 
-
 typedef struct{
 	string s;	
 	int pc;
 } Dependency;
 
 typedef struct{
+    string name;
+    int pc;
+} Label;
+
+
+typedef struct{
 	int memSize;
-	int labelSize;
-	int dataSize;
-	int dependencySize;
+	unsigned long labelSize;
+	unsigned long dataSize;
+	unsigned long inDependencySize;
+	unsigned long outDependencySize;
 } ModuleHeader;
 
 class ObjectModule{
 private:
+	int indice;
 	ModuleHeader mh;
-	vector<char> mem;
-	vector<Dependency> dependency;
+	int memorySize;
+	vector<Dependency> inDependency;
+	vector<Dependency> outDependency;
 	int startPosition;
+	char *fileName;
 public:
-	ObjectModule(int startPosition, int pc);
-	unsigned long getMemorySize() { return mem.size(); }
-	void fillLabelMap( map<string, Label> labelMap);
-	void fillDataMap( map<string, Data> label, int pc);
+	ObjectModule(char *fileName, int &pc, int index,
+		map<string, int> &labelMap, vector<Data> &data, char *mem);
+	void resolveDependencies(map<string, int> &labelMap, 
+		char *mem, int lastModuleIndex);
+	unsigned long getMemorySize() { return memorySize; }
 };

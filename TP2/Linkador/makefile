@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -O2
+CFLAGS =  -std=c++11 -O2
 
 all: main.o Linker.o ObjectModule.o
 	$(CC) $(CFLAGS) main.o Linker.o ObjectModule.o -o sb.exe

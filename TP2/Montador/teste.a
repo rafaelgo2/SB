@@ -1,5 +1,0 @@
-label1: loadc R6 IO ;
-label2: loadc R7 -1 ;
-rafael: .data 2 69
-call label1;
-.extern RAFAEL;

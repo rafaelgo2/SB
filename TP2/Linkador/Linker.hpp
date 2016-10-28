@@ -7,16 +7,17 @@ using namespace std;
 
 class Linker{
 private:
+	char *fileName;
 	int argc;
 	char **argv;
-	vector<ObjectModule*> objModule;
-	map<string, Label> labelMap;
-	map<string, Data> dataMap;
-	char memory[256];
+	vector<ObjectModule> objModule;
+	map<string, int> labelMap;
+	vector<Data> dataVec;
+	char mem[256];
 	int pc;
 public:
 	Linker(int argc, char *argv[]);
-	void startModules();
 	void resolveDependencies();
+	void initializeData();
 	void writeMemory();
 };
