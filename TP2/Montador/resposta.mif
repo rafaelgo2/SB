@@ -1,0 +1,16 @@
+DEPTH = 256;
+WIDTH = 8;
+ADDRESS_RADIX = HEX;
+DATA_RADIX = BIN;
+CONTENT
+BEGIN
+
+00        :  01101110;              -- label1: loadc R6 IO ;
+01        :  11111110;              -- 
+02        :  01101111;              -- label2: loadc R7-1 ;
+03        :  11111111;              -- 
+04        :  00000000;              -- rafael: .data 2 69
+05        :  01000101;              -- 
+06        :  10001000;              -- call label1 ;
+[07..FF]:  00000000;              -- 
+END;

@@ -1,16 +1,6 @@
 #include <fstream>
 
-Linker *Linker::instance = NULL;
-
-Linker *Linker::getInstance(){
-	if (instance == NULL)
-		instance = new Linker();
-	return instance;
-}
-
-void Linker::startInstance(int argc, char *argv[]){
-	//pc = 0;
-
+Linker::Linker(int argc, char *argv[]){
 	this->argc = argc;
 	this->argv = argv;
 	int objModuleSize = argc-2;	

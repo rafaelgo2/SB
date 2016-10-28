@@ -22,7 +22,6 @@ private:
 	vector<Dependency> dependency;
 	int startPosition;
 public:
-	ObjectModule(int startPosition);
-	
+	ObjectModule(int startPosition);	
 	int getMemorySize() { return mem.size(); }
 };

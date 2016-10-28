@@ -1,4 +1,0 @@
-Linker.cpp: In member function ‘void Linker::createModule(char*)’:
-Linker.cpp:59:37: error: ‘class Module’ has no member named ‘getFileName’
-  cout << module[module.size() - 1]->getFileName() << endl;
-                                     ^

@@ -27,14 +27,14 @@ void writeModuleHeader(ofstream &fout, ModuleHeader &moduleHeader){
 	fout << moduleHeader.memSize << " "
 		 << moduleHeader.labelSize << " "
 		 << moduleHeader.dataSize << " "
-		 << moduleHeader.dependencySize
+		 << moduleHeader.inDependencySize << " "
+		 << moduleHeader.outDependencySize
 		 << endl;
 }
 
-void writeMem(ofstream &fout, vector<char> &mem){
-	for (int i = 0; i < mem.size(); i++){
+void writeMem(ofstream &fout, char mem[256], int memSize){
+	for (int i = 0; i < memSize; i++)
 		fout << bitset<8>(mem[i]) << endl;
-	}
 }
 
 bool isANumber(string s){
@@ -42,9 +42,11 @@ bool isANumber(string s){
 	if (s[0] == '-')
 		init = 1;
 	for (int i = init; i < s.size(); i++){
-		if ((s[i] < '0') || (s[i] > '9'))
+		if ((s[i] < '0') || (s[i] > '9')){	
 			return false;
+		}
 	}
+	cout << s << " é um número! " << endl;
 	return true;
 }
 
@@ -53,8 +55,19 @@ bool isAReg(string s){
 	return ((s.size() == 2) && (s[0] == 'R') && (s[1] >= '0') && (s[1] <= '9')) ;
 }
 
-int getReg(string s){
+char getReg(string s){
+	cout << "ID Registrador: " << s[1] - '0' << endl;
 	return s[1] - '0';
+}
+
+bool isIO(string s){
+	if (((s.size() == 2) && (s[0] == 'I') && (s[1] == 'O')))
+		cout << "É IO!" << endl;
+	return ((s.size() == 2) && (s[0] == 'I') && (s[1] == 'O'));
+}
+
+char getIO(){
+	return 254;
 }
 
 void Module::fillOpCodeMap(){
@@ -86,6 +99,7 @@ void Module::fillOpCodeMap(){
 	opCodeMap["seq"] = 25;
 	opCodeMap["jmpp"] = 26;
 	opCodeMap[".data"] = 27;
+	opCodeMap[".extern"] = 28; //nao sei se isso ta certo
 }
 
 void Module::fillOpTypeMap(){
@@ -116,43 +130,60 @@ void Module::fillOpTypeMap(){
 	opTypeMap[24] = 3;
 	opTypeMap[25] = 3;
 	opTypeMap[26] = 1;
-	opTypeMap[27] = 5;
+	opTypeMap[27] = 99;
+	opTypeMap[28] = 5;
 }
 
 void Module::newInstruction(char n){
-	mem.push_back(n);
-	cout << "\t new instruction " << mem.size() << endl;
+	cout << "Nova Instrução(" << memSize << "): " << n + 0 << endl; 	
+	mem[memSize] = n;
+	memSize++;
 }
 
-void Module::newInstruction(string s, char n){
-	Dependency newDependency = {s, mem.size()};
-	dependency.push_back(newDependency);
-	cout << s << " " << mem.size() << endl;
-	newInstruction(n);
+void Module::newInstruction(string s, Type type){
+	Dependency newDependency = {s, memSize};
+	switch (type){
+		case (IN):{	
+			cout << "Criando uma dependencia INTERNA: " << s << endl;
+			inDependency.push_back(newDependency);
+		} break;
+		case (OUT):{
+			cout << "Criando uma dependencia EXTERNA: " << s << endl;
+			outDependency.push_back(newDependency);
+		} break;
+	}
+	newInstruction(0);
 }
 
 Module::Module(char *inFile, char *outFile){
+	cout << "Iniciando Montador" << endl
+		 << "Arquivo .a: " << inFile << endl
+		 << "Arquivo Objeto: " << outFile << endl << endl;
 	this->inFile = inFile;
 	this->outFile = outFile;
 	this->fillOpTypeMap();
 	this->fillOpCodeMap();
+	this->memSize = 0;
 }
 
-void Module::start(){
-	int pc = 0;
+void Module::process(){
 	ifstream fin(inFile);
 	string s, saux;
 	stringstream ss, ssaux;
-	for (; getline(fin, saux); ss.clear(), ssaux.clear()){
+	while (getline(fin, saux)){
 		ssaux.str(saux);
 		getline(ssaux, s, ';');
+		cout << "Linha: " << s << endl;
 		ss.str(s);
-		string labelName;
-		ss >> labelName;
-		if (labelName.size() > 0){
-			if (labelName[labelName.size() - 1] == ':'){
-				labelName.erase(labelName.size() - 1, 1);
-				string op;
+
+		string op;
+		ss >> op;
+		if (op.size() > 0){
+			cout << "PC: " << memSize << endl; 
+			if (op[op.size() - 1] == ':'){
+				op.erase(op.size() - 1, 1);
+				string labelName = op;
+				cout << "Label encontrado: " << labelName << endl;
 				ss >> op;
 				if (op == ".data"){
 					int numBytes;
@@ -160,38 +191,16 @@ void Module::start(){
 					ss >> numBytes >> value;
                     Data data_ = {labelName, numBytes, value};
 					data.push_back(data_);
-					cout << labelName << " " << numBytes << " " << value << endl;
+					cout << "Bytes: " << numBytes  << " | Valor: " << value << endl;
 				}
 				else{
-					Label label_ = {labelName, pc};
+					Label label_ = {labelName, memSize};
 					label.push_back(label_);
-					cout << labelName << " " << pc << endl;
-					pc += 2;
 				}
 			}
-			else
-				pc += 2;
-		}	
-	}
-	mem.reserve(pc);
-	fin.close();
-}
-
-void Module::finish(){
-	ifstream fin(inFile);
-	string s, saux;
-	stringstream ss, ssaux;
-	int pc = 0;
-	for (; getline(fin, saux); ss.clear(), ssaux.clear()){
-		ssaux.str(saux);
-		getline(ssaux, s, ';');	
-		ss.str(s);
-		string op;
-		ss >> op;
-		if (op.size() > 0){
-			if (op[op.size() - 1] == ':')
-				ss >> op;
-			cout << op << " " << opCodeMap[op] << " " << opTypeMap[opCodeMap[op]] << endl;
+			cout << "Operacao: |" << op << "|" << endl;	
+			cout << "Código: |" << opCodeMap[op] + 0 << "|" << endl;
+			cout << "Tipo: |" << opTypeMap[opCodeMap[op]] << "|" << endl;
 			switch (opTypeMap[opCodeMap[op]]){
 				case 0:{
 					newInstruction(opCodeMap[op] << 3);
@@ -200,32 +209,39 @@ void Module::finish(){
 				case 1:{
 					string op1, op2;
 					ss >> op1 >> op2;
-					newInstruction((opCodeMap[op] << 3) + getReg(op1));
+					cout << "Operadores: |" << op1 << "| |" << op2 << "|" << endl;
+					newInstruction( (opCodeMap[op] << 3) + getReg(op1));
 					if (isANumber(op2)){
 						stringstream ss_(op2);
-						int n = 0;
+						int n;
 						ss_ >> n;
 						newInstruction(n);
 					}
+					else if (isIO(op2)){
+						newInstruction(getIO());
+					}	
 					else{
-						newInstruction(op2, 0);
+						newInstruction(op2, IN);
 					}
 				} break;
 				case 2:{
 					string op1, op2;
 					ss >> op1 >> op2;
+					cout << "Operadores: |" << op1 << "| |" << op2 << "|" << endl; 
 					newInstruction((opCodeMap[op] << 3) + getReg(op1));
 					newInstruction(getReg(op2) << 5);
 				} break;
 				case 3:{
 					string op1, op2, op3;
 					ss >> op1 >> op2 >> op3;
+					cout << "Operadores: |" << op1 << "| |" << op2 << "| |" << op3 << "|" << endl;
 					newInstruction((opCodeMap[op] << 3) + getReg(op1));
 					newInstruction((getReg(op2) << 5) + (getReg(op3) << 2));
 				} break;
 				case 4:{
 					string op1;
 					ss >> op1;
+					cout << "Operadore: |" << op1 << "|" << endl;
 					newInstruction(opCodeMap[op] << 3);
 					if (isANumber(op1)){
 						stringstream ss_(op1);
@@ -233,25 +249,42 @@ void Module::finish(){
 						ss_ >> n;
 						newInstruction(n);
 					}
+					else if (isIO(op1)){
+						newInstruction(getIO());
+					}
 					else{
-						newInstruction(op1, 0);
+						newInstruction(op1, IN);
 					}
 				} break;
+				case 5:{
+					string op1;
+					ss >> op1;
+					cout << "Operadore: |" << op1 << "|" << endl;
+					newInstruction(opCodeMap["jump"] << 3);
+					newInstruction(op1, OUT);
+				} break;
 			}
+			cout << endl;
 		}
+		s.clear();
+		ss.clear();
+		saux.clear();
+		ssaux.clear();
 	}
 	fin.close();
 }
 
 void Module::write(){
 	ofstream fout(outFile, ios::binary);
-	ModuleHeader moduleHeader = {mem.size(), label.size(), data.size(), dependency.size()};
+	ModuleHeader moduleHeader = {memSize, label.size(), data.size(), inDependency.size(), outDependency.size()};
 	writeModuleHeader(fout, moduleHeader);
 	for (int i = 0; i < label.size(); i++)
 		writeLabel(fout, label[i]);
 	for (int i = 0; i < data.size(); i++)
 		writeData(fout, data[i]);
-	for (int i = 0; i < dependency.size(); i++)
-		writeDependency(fout, dependency[i]);
-	writeMem(fout, mem);
+	for (int i = 0; i < inDependency.size(); i++)
+		writeDependency(fout, inDependency[i]);
+	for (int i = 0; i < outDependency.size(); i++)
+		writeDependency(fout, outDependency[i]);
+	writeMem(fout, mem, memSize);
 }

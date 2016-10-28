@@ -7,6 +7,11 @@
 
 using namespace std;
 
+enum Type{
+	IN,
+	OUT
+};
+
 typedef struct{
 	string name;
 	int numBytes;
@@ -27,30 +32,33 @@ typedef struct{
 	int memSize;
 	int labelSize;
 	int dataSize;
-	int dependencySize;
+	int inDependencySize;
+	int outDependencySize;	
 } ModuleHeader;
-
 
 class Module{
 public:	
     Module(char *inFile, char *outFile);
 	void start();
-	void finish();
+	void process();
 	void write();
 private:
-	void newInstruction(char n);
-	void newInstruction(string s, char n);
 	void fillOpCodeMap();
 	void fillOpTypeMap();
+
+	void newInstruction(char n);
+	void newInstruction(string s, Type type);
 	char *inFile, *outFile;
 
-	map<string, int> opCodeMap;
-	int opTypeMap[28];
+	map<string, char> opCodeMap;
+	int opTypeMap[29];
 
-	vector<char> mem;
+	int memSize;
+	char mem[256];
 	vector<Label> label;
 	vector<Data> data;
-	vector<Dependency> dependency;
+	vector<Dependency> inDependency;
+	vector<Dependency> outDependency;
 };
 
 #endif /* Module_hpp */

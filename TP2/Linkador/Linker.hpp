@@ -26,12 +26,8 @@ private:
 	char memory[256];
 	int pc;
 public:
-	void startLinker(int argc, char *argv[]);
+	Linker(int argc, char *argv[]);
 	void startModules();
 	void resolveDependencies();
 	void writeMemory();
-private:
-	static Linker *instance;
-public:
-	static Linker *getInstance();
 };
