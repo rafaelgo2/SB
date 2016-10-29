@@ -89,7 +89,7 @@ void Module::fillOpCodeMap(){
 	opCodeMap["clear"] = 14;
 	opCodeMap["moveSp"] = 15;
 	opCodeMap["slt"] = 16;
-	opCodeMap["call"] = opCodeMap["extern"] = 17; // same of call
+	opCodeMap["call"] = opCodeMap[".extern"] = 17; // same of call
     opCodeMap["loadSp"] = 18;
     opCodeMap["storeSp"] = 19;
     opCodeMap["ret"] = 20;
