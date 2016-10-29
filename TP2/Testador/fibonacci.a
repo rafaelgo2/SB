@@ -1,0 +1,27 @@
+;           Fibonnaci iterative
+
+_fibonacci: loadi R7 one    ; R7 = 1 (constant)
+
+    loadi R0 IO             ; input from user
+
+    loadi R2 zero           ; init values
+    loadi R3 one            ;
+    loadi R1 zero           ;
+
+    jmpz R0 _finish         ; jump to finish and print 0 if input = 0
+
+_loopFib: move R4 R2        ; R4 = aux
+    add R2 R3               ; sum last number to current
+    move R3 R4              ; copy last from aux
+
+    add R1 R7               ; count
+    sgt R5 R0 R1            ; check branch cond
+
+    jmpp R5 _loopFib        ; branch to loop or not
+
+
+_finish: storei R2 IO	    ; output fibonacci number
+    exit  		            ; stop
+
+one:	.data 2 1	        ; constant 1
+zero:	.data 2 0	        ; constant 0

@@ -89,18 +89,17 @@ void Module::fillOpCodeMap(){
 	opCodeMap["clear"] = 14;
 	opCodeMap["moveSp"] = 15;
 	opCodeMap["slt"] = 16;
-	opCodeMap["call"] = 17;
-	opCodeMap["loadSp"] = 18;
-	opCodeMap["storeSp"] = 19;
-	opCodeMap["ret"] = 20;
-	opCodeMap["loadRa"] = 21;
-	opCodeMap["storeRa"] = 22;
-	opCodeMap["addi"] = 23;
-	opCodeMap["sgt"] = 24;
-	opCodeMap["seq"] = 25;
-	opCodeMap["jmpp"] = 26;
-	opCodeMap[".data"] = 27;
-	opCodeMap[".extern"] = 28; //nao sei se isso ta certo
+	opCodeMap["call"] = opCodeMap["extern"] = 17; // same of call
+    opCodeMap["loadSp"] = 18;
+    opCodeMap["storeSp"] = 19;
+    opCodeMap["ret"] = 20;
+    opCodeMap["loadRa"] = 21;
+    opCodeMap["storeRa"] = 22;
+    opCodeMap["addi"] = 23;
+    opCodeMap["sgt"] = 24;
+    opCodeMap["seq"] = 25;
+    opCodeMap["jmpp"] = 26;
+    opCodeMap[".data"] = 27;
 }
 
 void Module::fillOpTypeMap(){
