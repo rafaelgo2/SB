@@ -3,7 +3,7 @@ moveSp -2 ;
 storeSp R6 0 ;                  Marcador de Fundo de Pilha
 call _initR ;
 call _initS ;
-extern _fibonacci ;
+.extern _fibonacci ;
 exit ;
 _initR: loadi R0 IO ;
     move R1 R0 ;
