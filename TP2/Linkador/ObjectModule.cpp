@@ -5,32 +5,32 @@
 
 using namespace std;
 
-void readData(ifstream &fin, Data &data, int index){
-	fin >> data.name
-		>> data.numBytes
-		>> data.value;
-	data.name += index;
-}
-
-void readDependency(ifstream &fin, Dependency &dependency, int startPosition){
-	fin >> dependency.s
-		>> dependency.pc;
-	dependency.pc += startPosition;
-}
-
-void readLabel(ifstream &fin, Label &label, int startPosition, int index){
-	fin >> label.name
-		>> label.pc;
-	label.pc += startPosition;
-	label.name += index;
-}
-
 void readModuleHeader(ifstream &fin, ModuleHeader &moduleHeader){
 	fin >> moduleHeader.memSize
 		>> moduleHeader.labelSize
 		>> moduleHeader.dataSize
 		>> moduleHeader.inDependencySize
 		>> moduleHeader.outDependencySize;
+}
+
+void readLabel(ifstream &fin, Label &label, int startPosition, int index){
+	fin >> label.name
+		>> label.pc;
+	label.pc += startPosition;
+	label.name += "_" to_string(index);
+}
+
+void readData(ifstream &fin, Data &data, int index){
+	fin >> data.name
+		>> data.numBytes
+		>> data.value;
+	data.name += "_" + to_string(index);
+}
+
+void readDependency(ifstream &fin, Dependency &dependency, int startPosition){
+	fin >> dependency.s
+		>> dependency.pc;
+	dependency.pc += startPosition;
 }
 
 void mergeMemory(ifstream &fin, int memSize, int &pc, char *mem){
@@ -53,7 +53,7 @@ ObjectModule::ObjectModule(char *fileName, int &pc, int index,
 	for (int i = 0; i < moduleHeader.labelSize; i++){
 		Label label_;
 		readLabel(fin, label_, startPosition, index);
-		labelMap[label_.name] = pc + 1;
+		labelMap[label_.name] = label_.pc;
 	}
 	for (int i = 0; i < moduleHeader.dataSize; i++){
 		Data data_;
@@ -62,8 +62,8 @@ ObjectModule::ObjectModule(char *fileName, int &pc, int index,
 	}
 	for (int i = 0; i < moduleHeader.inDependencySize; i++){
 		Dependency dependency_;
-		readDependency(fin, dependency_, startPosition);
-		dependency_.s += i;
+		readDependency(fin, dependency_, startPosition, index);
+		dependency_.s += "_" + to_string(i);
 		inDependency.push_back(dependency_);
 	}
 	for (int i = 0; i < moduleHeader.outDependencySize; i++){
