@@ -17,7 +17,7 @@ void readLabel(ifstream &fin, Label &label, int startPosition, int index){
 	fin >> label.name
 		>> label.pc;
 	label.pc += startPosition;
-	label.name += "_" to_string(index);
+	label.name += "_" + to_string(index);
 }
 
 void readData(ifstream &fin, Data &data, int index){
@@ -61,7 +61,7 @@ ObjectModule::ObjectModule(char *fileName, int &pc, int index,
 	}
 	for (int i = 0; i < moduleHeader.inDependencySize; i++){
 		Dependency dependency_;
-		readDependency(fin, dependency_, startPosition, index);
+		readDependency(fin, dependency_, startPosition);
 		dependency_.s += "_" + to_string(i);
 		inDependency.push_back(dependency_);
 	}
