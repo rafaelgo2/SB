@@ -48,7 +48,6 @@ ObjectModule::ObjectModule(char *fileName, int &pc, int index,
 	startPosition = pc;
 	ifstream fin(fileName);
 	ModuleHeader moduleHeader;
-	
 	readModuleHeader(fin, moduleHeader);
 	for (int i = 0; i < moduleHeader.labelSize; i++){
 		Label label_;
@@ -85,8 +84,8 @@ void ObjectModule::resolveDependencies(map<string, int> &labelMap,
 		int pc = outDependency[i].pc;
 		int value;
 		for (int j = 0; j < lastModuleIndex; j++){
-			if ((labelMap[outDependency[i].s + to_string(j)]) > 0){
-				value = labelMap[outDependency[i].s + to_string(j)] - 1;
+			if ((labelMap[outDependency[i].s + "_" + to_string(j)]) > 0){
+				value = labelMap[outDependency[i].s + "_" + to_string(j)] - 1;
 			}
 		}
 		mem[pc] = value;

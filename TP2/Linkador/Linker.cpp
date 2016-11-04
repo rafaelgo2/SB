@@ -9,10 +9,10 @@ using namespace std;
 Linker::Linker(int argc, char *argv[]){
 	fileName = argv[1];
 	pc = 0;
-	objModule.reserve( (unsigned long) argc-2);
+	objModule.reserve((unsigned long) argc-2);
 	fill(mem, mem+256, 0);
 	for (int i = 2; i < argc; i++){
-		objModule.push_back(ObjectModule(argv[i] , pc, i-2,
+		objModule.push_back(ObjectModule(argv[i], pc, i-2,
 								labelMap, dataVec, mem));
 	}
 }
