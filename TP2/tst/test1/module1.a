@@ -1,0 +1,19 @@
+;	Calcula o i-esimo terno da sequencia de Fibonacci
+
+_fibonacci:	loadi R0 IO				; Recebe um inteiro
+
+			loadc R1 0	 			; Primeiros termos da sequencia
+			loadc R2 1				;
+
+			jmpz R0 _finish			;
+
+_loopFib:	move R3 R1				; R3 armazena temporariamente um termo da sequencia
+			add R1 R2				; Soma os dois ultimos termos para obter o proximo
+			move R2 R3				; Recupera o termo armazenado
+
+			addi R0 -1				;
+			jmpp R0 _loopFib		; Se(R0==0), o termo desejado foi obtido
+
+_finish:	storei R1 IO			; Imprime o resultado
+
+	.extern _begin					;

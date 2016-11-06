@@ -1,0 +1,19 @@
+_begin:	loadi R0 IO					; Recebe um inteiro 
+
+	loadc R1 1	 					; Verifica se o inteiro recebido é igual a 1
+	seq R1 R1 R0					;
+	jmpp R1 _callFibonacci			;
+
+	loadc R1 2	 					; Verifica se o inteiro recebido é igual a 2
+	seq R1 R1 R0					;
+	jmpp R1 _callFatorial			;
+
+	loadc R1 3	 					; Verifica se o inteiro recebido é igual a 2
+	seq R1 R1 R0					;
+	jmpp R1 _callDivisores			;
+
+	exit							;
+
+_callFibonacci:	.extern _fibonacci	;
+_callFatorial:	.extern _fatorial	;
+_callDivisores:	.extern _divisores	;

@@ -1,0 +1,16 @@
+;	Calcula o fatorial de um inteiro positivo menor que 8
+
+_fatorial:	loadi R0 IO				; R0 eh o inteiro cujo fatorial sera calculado
+			jmpn R0 _fatorial		; Se a entrada for negativa, a ignora
+
+			loadc R1 8				;
+			slt R1 R0 R1			;
+			jmpz R1 _fatorial		; Se a entrada for maior ou igual a 8, a ignora
+
+_loopFat:	multiply R1 R0			; Loop que multiplica resultado parcial (R1) pelo
+			addi R0 -1				;	proximo fator
+			jmpp R0 _loopFat		;
+
+	storei R1 IO					; Imprime o resultado
+
+	.extern _begin					;
