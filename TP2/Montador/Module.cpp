@@ -89,7 +89,7 @@ void Module::fillOpCodeMap(){
 	opCodeMap["clear"] = 14;
 	opCodeMap["moveSp"] = 15;
 	opCodeMap["slt"] = 16;
-	opCodeMap["call"] = opCodeMap[".extern"] = 17; // same of call
+	opCodeMap["call"] = 17; // same of call
     opCodeMap["loadSp"] = 18;
     opCodeMap["storeSp"] = 19;
     opCodeMap["ret"] = 20;
@@ -100,6 +100,7 @@ void Module::fillOpCodeMap(){
     opCodeMap["seq"] = 25;
     opCodeMap["jmpp"] = 26;
     opCodeMap[".data"] = 27;
+	opCodeMap[".extern"] = 28;
 }
 
 void Module::fillOpTypeMap(){
@@ -260,7 +261,7 @@ void Module::process(){
 					string op1;
 					ss >> op1;
 					cout << "Operadore: |" << op1 << "|" << endl;
-					newInstruction(opCodeMap["jump"] << 3);
+					newInstruction(opCodeMap["call"] << 3);
 					newInstruction(op1, OUT);
 				} break;
 			}

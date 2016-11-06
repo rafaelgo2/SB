@@ -53,7 +53,8 @@ int main(int argc, char *argv[]){
 
 	for (int i = 1; i < argc-1; i++){
 		char remove[999];
-		sprintf(remove, "rm *.exe saidaTmp%d.obj", i);
+		sprintf(remove, "rm saidaTmp%d.obj", i);
 		system(remove);
 	}
+	system("rm linkador montador");
 }

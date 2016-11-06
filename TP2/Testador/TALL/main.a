@@ -1,0 +1,20 @@
+loadi R0 IO;
+loadi R1 1;
+
+_OP1: subtract R0 R1;
+jmpp R0 _OP2; 
+.extern _OP1;
+jump _end;
+
+_OP2: subtract R0 R1;
+jmpp R0 _OP3;
+.extern _OP2;
+jump _end;
+
+_OP3: subtract R0 R1;
+jmpp R1 _end;
+.extern _OP3;
+jump _end;
+
+_end: exit;
+ZERO: .data 2 0;

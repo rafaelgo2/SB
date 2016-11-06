@@ -27,7 +27,7 @@ void Linker::initializeData(){
 
 void Linker::resolveDependencies(){
 	for (int i = 0; i < objModule.size(); i++){
-		objModule[i].resolveDependencies(labelMap, mem, objModule.size());
+		objModule[i].resolveDependencies(labelMap, mem, i, objModule.size());
 	}
 }
 

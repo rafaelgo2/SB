@@ -1,3 +1,4 @@
+#include <iostream>
 #include <fstream>
 #include "ObjectModule.hpp"
 #include <vector>
@@ -16,7 +17,7 @@ void readModuleHeader(ifstream &fin, ModuleHeader &moduleHeader){
 void readLabel(ifstream &fin, Label &label, int startPosition, int index){
 	fin >> label.name
 		>> label.pc;
-	label.pc += startPosition;
+	label.pc += startPosition + 1;
 	label.name += "_" + to_string(index);
 }
 
@@ -62,7 +63,7 @@ ObjectModule::ObjectModule(char *fileName, int &pc, int index,
 	for (int i = 0; i < moduleHeader.inDependencySize; i++){
 		Dependency dependency_;
 		readDependency(fin, dependency_, startPosition);
-		dependency_.s += "_" + to_string(i);
+		dependency_.s += "_" + to_string(index);
 		inDependency.push_back(dependency_);
 	}
 	for (int i = 0; i < moduleHeader.outDependencySize; i++){
@@ -74,7 +75,7 @@ ObjectModule::ObjectModule(char *fileName, int &pc, int index,
 }
 
 void ObjectModule::resolveDependencies(map<string, int> &labelMap, 
-		char *mem, int lastModuleIndex){
+		char *mem, int index, int lastModuleIndex){
 	for (int i = 0; i < inDependency.size(); i++){
 		int pc = inDependency[i].pc;
 		int value = labelMap[inDependency[i].s] - 1;
@@ -82,12 +83,15 @@ void ObjectModule::resolveDependencies(map<string, int> &labelMap,
 	}
 	for (int i = 0; i < outDependency.size(); i++){
 		int pc = outDependency[i].pc;
-		int value;
-		for (int j = 0; j < lastModuleIndex; j++){
-			if ((labelMap[outDependency[i].s + "_" + to_string(j)]) > 0){
-				value = labelMap[outDependency[i].s + "_" + to_string(j)] - 1;
-			}
+		int value = -1;
+		for (int j = 0; (j < lastModuleIndex) && (value == -1); j++){
+			if (j != index)
+				if ((labelMap[outDependency[i].s + "_" + to_string(j)]) > 0){
+					value = labelMap[outDependency[i].s + "_" + to_string(j)] - 1;
+				}
 		}
+		if (value == -1)
+			cout << "_____ERRO!_____";
 		mem[pc] = value;
 	}
 }
