@@ -118,7 +118,7 @@ void Module::fillOpTypeMap(){
 	opTypeMap[11] = 2;
 	opTypeMap[12] = 2;
 	opTypeMap[13] = 1;
-	opTypeMap[14] = 1;
+	opTypeMap[14] = 6;
 	opTypeMap[15] = 4;
 	opTypeMap[16] = 3;
 	opTypeMap[17] = 4;
@@ -263,6 +263,13 @@ void Module::process(){
 					cout << "Operadore: |" << op1 << "|" << endl;
 					newInstruction(opCodeMap["call"] << 3);
 					newInstruction(op1, OUT);
+				} break;
+				case 6:{
+					string op1;
+					ss >> op1;
+					char reg = getReg(op1);
+					newInstruction((opCodeMap[op] << 3) + reg);
+					newInstruction(0);
 				} break;
 			}
 			cout << endl;
