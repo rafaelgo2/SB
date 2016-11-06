@@ -1,0 +1,34 @@
+_moduleZero:	loadi R0 IO	;
+
+	loadi R0 IO				; Input from user
+
+	loadi R1 one 			;
+	subtract R1 R1			;
+	jmpz R1 _callOne		;
+
+	loadi R2 two 			;
+	subtract R1 R2			;
+	jmpz R2 _callTwo		;
+
+	loadi R3 three 			;
+	subtract R1 R3			;
+	jmpz R3 _callThree		;
+
+	loadi R4 four 			;
+	subtract R1 R4			;
+	jmpz R4 _callFour		;
+
+	jump _exit				;
+
+_callOne:	.extern _moduleOne		;
+_callTwo:	.extern _moduleTwo		;
+_callThree:	.extern _moduleThree	;
+_callFour:	.extern _moduleFour		;
+
+_exit:	exit 				; Stop
+
+zero:	.data 2 0			; Constant 0
+one:	.data 2 1			; Constant 1
+two:	.data 2 2			; Constant 2
+three:	.data 2 3			; Constant 3
+four:	.data 2 4			; Constant 4
