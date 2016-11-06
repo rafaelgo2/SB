@@ -1,0 +1,108 @@
+loadi R0 IO; 0 1
+loadi R1 1; 2 3
+
+_this_OP1: subtract R0 R1; 4 5
+jmpp R0 _this_OP2; A B
+call _OP1; C D
+jump _end; E F
+
+_this_OP2: subtract R0 R1; 10 11
+jmpp R0 _this_OP3; 12 13
+call _OP2; 14 15
+jump _end; 16 17
+
+_this_OP3: subtract R0 R1; 18 19
+jmpp R1 _end; 1A 1B
+call _OP3; 1C 1D
+
+_end: exit; 1E 1F
+
+_OP1: loadi R0 IO ; 20 21
+clear R1 ; 22 23
+_OP1new: loadi R2 IO ; 24 25
+jmpn R2 _OP1new ; 26 27
+clear R3 ; 28 29
+loadc R4 8 ; 2A 2B
+slt R3 R2 R4 ;	2C 2D
+jmpz R3 _OP1new ;	2E 2F
+_OP1loop: multiply R3 R2 ; 30 31
+addi R2 -1 ; 32 33
+jmpp R2 _OP1loop ; 34 35
+storei R3 IO ; 36 37
+addi R1 1 ; 38 39
+seq R2 R0 R1 ; 3A 3B
+jmpz R2 _OP1new ; 3C 3D
+ret ;						calculados
+
+
+_OP2: loadi R1 IO ;					R1 armazena A
+loadi R2 IO	;					R2 armazena B
+loadi R3 IO	;					R3 armazena C
+loadi R4 IO	;					R4 armazena x
+_OP2new: move R5 R4 ;				R5 calcula Ax^2
+multiply R5 R5 ;
+multiply R5 R1 ;
+multiply R4 R2 ;				R4 calcula Ax^2 + Bx + C
+add R4 R3 ;
+add R4 R5 ;
+moveSp -2 ;						Imprime e armazena o resultado da equacao
+storeSp R4 0 ;
+storei R4 IO ;
+addi R0 2 ;						R0 armazena o deslocamento do ponteiro da pilha
+loadi R4 IO ;					Recebe o novo x e, caso seja nao nulo, reinicia
+jmpp R4 _OP2new ;						o calculo
+jmpn R4 _OP2new ;
+jump _OP2order ;
+_OP2continueOrder: move R1 R0 ;	Em passadas posteriores a primeira, retorna o
+addi R1 -2 ;						ponteiro da pilha para a posicao do momento
+_OP2continueOrderLoop: moveSp -2 ;		em que a ordenacao comeca
+addi R1 -2 ;
+jmpp R1 _OP2continueOrderLoop ;	Enquanto sp nao estiver pronto, sp -= 2
+_OP2order: move R1 R0 ;			R1 indica a qntde de bytes da pilha percorridos
+loadc R2 1 ;					R2 indica se a pilha esta ordenada
+_OP2orderLoop: loadSp R3 0 ;		A pilha comeca a ser percorrida e ordenada, dois
+loadSp R4 2 ;						valores seguidos sao carregados da pilha
+clear R5 ;
+slt R5 R4 R3 ;
+jmpz R5 _OP2nextStage ;			Se R5 = 0, os valores carregados estao em ordem
+clear R2 ;						Caso contrario R2 eh alterado e os valores sao
+storeSp R3 2 ;						ordenados na pilha
+storeSp R4 0 ;
+_OP2nextStage: moveSp 2 ;			Sp eh preparado para proxima leitura
+addi R1 -2 ;
+loadc R3 3 ;
+clear R4 ;
+sgt R4 R1 R3 ;					Verifica se R1 <= 2, pois o loop deve parar no
+jmpp R4 _OP2orderLoop ;				no penultimo item da pilha
+jmpz R2 _OP2continueOrder ;		Se a pilha foi totalmente percorrida e ainda
+move R1 R0 ;						assim nao estiver em ordem, o loop continua
+_OP2resetSP: move R1 R0 ;			Retorna o ponteiro da pilha para a posicao do
+addi R1 -2 ;						momento em que a ordenacao comeca
+_OP2continueResetSp: moveSp -2 ;
+addi R1 -2 ;
+jmpp R1 _OP2continueResetSp ;
+move R1 R0 ;
+_OP2printSp: loadSp R2 0 ;			A pilha eh percorrida para impressao
+storei R2 IO ;
+moveSp 2 ;
+addi R1 -2 ;
+jmpp R1 _OP2printSp ;
+ret ;
+
+_OP3: loadi R2 IO;
+loadi R6 one;
+loadi R0 zero;
+loadi R1 one;
+loadi R3 zero;
+_OP3loop: jmpz R2 _OP3endLoop;
+	move R3 R1;
+	add R1 R0;
+	move R0 R3;
+	subtract R2 R6;
+jump _OP3loop;
+_OP3endLoop: storei R0 IO;
+ret;
+
+ZERO: .data 2 0;
+zero: .data 2 0;
+one: .data 2 1; 

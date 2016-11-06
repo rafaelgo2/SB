@@ -1,0 +1,15 @@
+_moduleZero:	loadi R0 IO	; Recebe um inteiro 
+
+	loadc R1 1	 			; Verifica se o inteiro recebido é igual a 1		se(==1) calcula um termo da sequencia de Fibonnaci
+	seq R1 R1 R0			;
+
+	loadc R2 2	 			; Verifica se o inteiro recebido é igual a 2		se(==2) calcula o fatorial de um numero
+	seq R2 R2 R0			;
+
+	jmpp R1 _callFib		;
+	jmpp R2 _callFat		;
+
+	exit					;
+
+_callFib:	.extern _fibonacci		;
+_callFat:	.extern _fatorial		;
