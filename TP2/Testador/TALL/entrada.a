@@ -1,49 +1,45 @@
-loadi R0 IO;
-loadi R1 1;
+loadi R0 IO; 0 1
+loadi R1 1; 2 3
 
-OP1: subtract R0 R1;
-jmpp R0 OP2; 
-call _OP1;
-jump _end;
+_this_OP1: subtract R0 R1; 4 5
+jmpp R0 _this_OP2; 6 7
+call _OP1; 8 9
+jump _end; 10 11
 
-OP2: subtract R0 R1;
-jmpp R0 _OP3;
-call _OP2;
-jump _end;
+_this_OP2: subtract R0 R1; 12 13
+jmpp R0 _this_OP3; 14 15
+call _OP2; 16 17
+jump _end; 18 19
 
-OP3: subtract R0 R1;
-jmpp R1 _end;
-call _OP3;
-jump _end;
+_this_OP3: subtract R0 R1; 20 21
+jmpp R1 _end; 22 23
+call _OP3; 24 25
 
-_end: exit;
-
-;-------------------
+_end: exit; 26 27
 
 _OP1: loadi R0 IO ;			R0 representa a qntde de fatoriais a serem calculados
 clear R1 ;				R1 representa a qntde de fatoriais ja calculados
-_newOP1: loadi R2 IO ;		R2 eh o inteiro cujo fatorial sera calculado
-jmpn R2 _newOP1;			Se a entrada for negativa, a ignora
+_OP1new: loadi R2 IO ;		R2 eh o inteiro cujo fatorial sera calculado
+jmpn R2 _OP1new ;			Se a entrada for negativa, a ignora
 clear R3 ;
 loadc R4 8 ;
 slt R3 R2 R4 ;			Verifica se a entrada eh maior ou igual a 8
-jmpz R3 _newOP1 ;			Se for, a ignora
-_loop: multiply R3 R2 ;	Loop que multiplica resultado parcial (R3, inicialmente
+jmpz R3 _OP1new ;			Se for, a ignora
+_OP1loop: multiply R3 R2 ;	Loop que multiplica resultado parcial (R3, inicialmente
 addi R2 -1 ;				igual a 1) pelo proximo fator
-jmpp R2 _loop ;			Enquanto o proximo fator for > 0, o fatorial ainda nao
+jmpp R2 _OP1loop ;			Enquanto o proximo fator for > 0, o fatorial ainda nao
 storei R3 IO ;				esta pronto
 addi R1 1 ;
 seq R2 R0 R1 ;
-jmpz R2 _newOP1;			Se R2 == 0, entao R0 != R1 e ainda ha fatoriais a serem
-exit ;						calculados
+jmpz R2 _OP1new ;			Se R2 == 0, entao R0 != R1 e ainda ha fatoriais a serem
+ret ;						calculados
 
-;-------------------
 
 _OP2: loadi R1 IO ;					R1 armazena A
 loadi R2 IO	;					R2 armazena B
 loadi R3 IO	;					R3 armazena C
 loadi R4 IO	;					R4 armazena x
-_newOP2: move R5 R4 ;				R5 calcula Ax^2
+_OP2new: move R5 R4 ;				R5 calcula Ax^2
 multiply R5 R5 ;
 multiply R5 R1 ;
 multiply R4 R2 ;				R4 calcula Ax^2 + Bx + C
@@ -54,74 +50,59 @@ storeSp R4 0 ;
 storei R4 IO ;
 addi R0 2 ;						R0 armazena o deslocamento do ponteiro da pilha
 loadi R4 IO ;					Recebe o novo x e, caso seja nao nulo, reinicia
-jmpp R4 _newOP2;						o calculo
-jmpn R4 _newOP2;
-jump _order ;
-_continueOrder: move R1 R0 ;	Em passadas posteriores a primeira, retorna o
+jmpp R4 _OP2new ;						o calculo
+jmpn R4 _OP2new ;
+jump _OP2order ;
+_OP2continueOrder: move R1 R0 ;	Em passadas posteriores a primeira, retorna o
 addi R1 -2 ;						ponteiro da pilha para a posicao do momento
-_continueOrderLoop: moveSp -2 ;		em que a ordenacao comeca
+_OP2continueOrderLoop: moveSp -2 ;		em que a ordenacao comeca
 addi R1 -2 ;
-jmpp R1 _continueOrderLoop ;	Enquanto sp nao estiver pronto, sp -= 2
-_order: move R1 R0 ;			R1 indica a qntde de bytes da pilha percorridos
+jmpp R1 _OP2continueOrderLoop ;	Enquanto sp nao estiver pronto, sp -= 2
+_OP2order: move R1 R0 ;			R1 indica a qntde de bytes da pilha percorridos
 loadc R2 1 ;					R2 indica se a pilha esta ordenada
-_orderLoop: loadSp R3 0 ;		A pilha comeca a ser percorrida e ordenada, dois
+_OP2orderLoop: loadSp R3 0 ;		A pilha comeca a ser percorrida e ordenada, dois
 loadSp R4 2 ;						valores seguidos sao carregados da pilha
 clear R5 ;
 slt R5 R4 R3 ;
-jmpz R5 _nextStage ;			Se R5 = 0, os valores carregados estao em ordem
+jmpz R5 _OP2nextStage ;			Se R5 = 0, os valores carregados estao em ordem
 clear R2 ;						Caso contrario R2 eh alterado e os valores sao
 storeSp R3 2 ;						ordenados na pilha
 storeSp R4 0 ;
-_nextStage: moveSp 2 ;			Sp eh preparado para proxima leitura
+_OP2nextStage: moveSp 2 ;			Sp eh preparado para proxima leitura
 addi R1 -2 ;
 loadc R3 3 ;
 clear R4 ;
 sgt R4 R1 R3 ;					Verifica se R1 <= 2, pois o loop deve parar no
-jmpp R4 _orderLoop ;				no penultimo item da pilha
-jmpz R2 _continueOrder ;		Se a pilha foi totalmente percorrida e ainda
+jmpp R4 _OP2orderLoop ;				no penultimo item da pilha
+jmpz R2 _OP2continueOrder ;		Se a pilha foi totalmente percorrida e ainda
 move R1 R0 ;						assim nao estiver em ordem, o loop continua
-_resetSP: move R1 R0 ;			Retorna o ponteiro da pilha para a posicao do
+_OP2resetSP: move R1 R0 ;			Retorna o ponteiro da pilha para a posicao do
 addi R1 -2 ;						momento em que a ordenacao comeca
-_continueResetSp: moveSp -2 ;
+_OP2continueResetSp: moveSp -2 ;
 addi R1 -2 ;
-jmpp R1 _continueResetSp ;
+jmpp R1 _OP2continueResetSp ;
 move R1 R0 ;
-_printSp: loadSp R2 0 ;			A pilha eh percorrida para impressao
+_OP2printSp: loadSp R2 0 ;			A pilha eh percorrida para impressao
 storei R2 IO ;
 moveSp 2 ;
 addi R1 -2 ;
-jmpp R1 _printSp ;
-exit ;
+jmpp R1 _OP2printSp ;
+ret ;
 
-;-------------------
-
-_OP3: loadc R6 -1 ;
-moveSp -2 ;
-storeSp R6 0 ;                  Marcador de Fundo de Pilha
-call _initR ;
-call _initS ;
-exit ;
-_initR: loadi R0 IO ;
-    move R1 R0 ;
-    subtract R1 R6 ;
-    jmpz R1 _endR ;
-    moveSp -2 ;
-    storeSp R0 0 ;
-    jump _initR ;
-_endR: ret ;
-_initS: loadi R0 IO ;
-    _while: loadSp R3 0 ;       Enquanto R3 diferente de -1
-        move R4 R3 ;
-        subtract R4 R6 ;
-        jmpz R4 _endWhile ;
-        move R4 R3 ;
-        subtract R4 R0 ;
-        jmpz R4 _endWhile ;     Se Topo da Pilha igual ao IO
-        moveSp 2 ;              Desce a pilha
-        jump _while ;
-    _endWhile: storei R3 IO ;   Escreva o valor encontrado 
-_endS: ret ;
-
-; datas
+_OP3: loadi R2 IO;
+loadi R6 one;
+loadi R0 zero;
+loadi R1 one;
+loadi R3 zero;
+_OP3loop: jmpz R2 _OP3endLoop;
+	move R3 R1;
+	add R1 R0;
+	move R0 R3;
+	subtract R2 R6;
+jump _OP3loop;
+_OP3endLoop: storei R0 IO;
+ret;
 
 ZERO: .data 2 0;
+zero: .data 2 0;
+one: .data 2 1; 

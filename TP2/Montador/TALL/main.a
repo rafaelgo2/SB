@@ -16,6 +16,4 @@ jmpp R1 _end; 22 23
 .extern _OP3; 24 25
 
 _end: exit; 26 27
-
-
-ZERO: .data 2 0; 
+ZERO: .data 2 0; 28 29

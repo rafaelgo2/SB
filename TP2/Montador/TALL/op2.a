@@ -50,4 +50,4 @@ storei R2 IO ;
 moveSp 2 ;
 addi R1 -2 ;
 jmpp R1 _printSp ;
-ret ;
+exit ;

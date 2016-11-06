@@ -13,4 +13,4 @@ storei R3 IO ;				esta pronto
 addi R1 1 ;
 seq R2 R0 R1 ;
 jmpz R2 _new ;			Se R2 == 0, entao R0 != R1 e ainda ha fatoriais a serem
-ret ;						calculados
+exit ;						calculados
