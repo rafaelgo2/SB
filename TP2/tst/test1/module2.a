@@ -13,4 +13,4 @@ _loopFat:	multiply R1 R0			; Loop que multiplica resultado parcial (R1) pelo
 
 	storei R1 IO					; Imprime o resultado
 
-	.extern _begin					;
+	ret								;

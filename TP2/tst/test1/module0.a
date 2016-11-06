@@ -8,12 +8,19 @@ _begin:	loadi R0 IO					; Recebe um inteiro
 	seq R1 R1 R0					;
 	jmpp R1 _callFatorial			;
 
-	loadc R1 3	 					; Verifica se o inteiro recebido é igual a 2
+	loadc R1 3	 					; Verifica se o inteiro recebido é igual a 3
 	seq R1 R1 R0					;
 	jmpp R1 _callDivisores			;
 
-	exit							;
+	jump _fim						;
 
 _callFibonacci:	.extern _fibonacci	;
+				jump _fim			;
+
 _callFatorial:	.extern _fatorial	;
+				jump _fim			;
+
 _callDivisores:	.extern _divisores	;
+				jump _fim			;
+
+_fim:	exit						;

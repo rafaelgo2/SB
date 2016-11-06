@@ -1,20 +1,22 @@
-_getDivisors: move R3 R1; //Recebe A do MAIN
-loadi R4 one; // C = A
-add R4 R4; // C += 1, para A < (C+1)
-_while: slt R5 R4 R3;
-	jmpz R5 _endWhile; Enquanto A < (C+1)
-	move R6 R3;
-	divide R6 R4 // X/A*A - A = 0, apenas se A\X
-	multiply R6 R4;
-	subtract R6 R3;
-	jmpz R6 _isDivisor; Se A\X
+_getDivisors:	move R3 R1			; Recebe A do MAIN
+				loadi R4 one		; C = A
+				add R4 R4			; C += 1, para A < (C+1)
 
-	add R4 R2;
-	jump _while;
+_while:	slt R5 R4 R3				;
+		jmpz R5 _endWhile			; Enquanto A < (C+1)
+		move R6 R3					;
+		divide R6 R4				; X/A*A - A = 0, apenas se A\X
+		multiply R6 R4				;
+		subtract R6 R3				;
+		jmpz R6 _isDivisor			; Se A\X
 
-	_isDivisor: storei R4 IO; Escreva A
-	add R4 R2;
-	jump _while;
-_endWhile: ret;
+		add R4 R2					;
+		jump _while					;
 
-one: .data 2 1;
+_isDivisor:	storei R4 IO			; Escreva A
+			add R4 R2				;
+			jump _while				;
+
+_endWhile:	ret;
+
+one:	.data 2 1					;

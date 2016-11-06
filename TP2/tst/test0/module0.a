@@ -9,19 +9,19 @@
 
 	loadc R4 2	 					; Verifica se OP é igual a 2
 	seq R4 R4 R0					;
-	jmpz R4 _callMenor				;
+	jmpp R4 _callMenor				;
 
 	loadc R4 3	 					; Verifica se OP é igual a 3
 	seq R4 R4 R0					;
-	jmpz R4 _callSoma				;
+	jmpp R4 _callSoma				;
 
 	loadc R4 4	 					; Verifica se OP é igual a 4
 	seq R4 R4 R0					;
-	jmpz R4 _callProduto			;
+	jmpp R4 _callProduto			;
 
 	loadc R4 5	 					; Verifica se OP é igual a 5
 	seq R4 R4 R0					;
-	jmpz R4 _callMedia				;
+	jmpp R4 _callMedia				;
 
 	jump _fim						;
 

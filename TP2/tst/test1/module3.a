@@ -1,17 +1,19 @@
-loadi R1 IO; 0 1 //Lê A
-loadi R0 IO; 2 3 // Lê B
-loadi R7 one; 4 5
-add R0 R7; //Incrementa B em 1, pois A < (B+1) equivale a A <= B
-loadi R7 separator;
-_while: slt R2 R1 R0;
-	 jmpz R2 _endWhile; Equanto A < (B+1)
-	storei R1 IO;
-	storei R7 IO;
-	.extern _getDivisors; Escreva os Divisores não Obvios de A
-	storei R7 IO;
-	add R1 R2; Incrementa A
-	jump _while;
-_endWhile: exit;
+_divisores:	loadi R1 IO				; Lê A
+			loadi R0 IO				; Lê B
+			loadi R7				;
+			add R0 R7				; Incrementa B em 1, pois A < (B+1) equivale a A <= B
+			loadi R7 separator		;
 
-one: .data 2 1;
-separator: .data 2 0;
+_while:	slt R2 R1 R0				;
+		jmpz R2 _endWhile			; Equanto A < (B+1)
+		storei R1 IO				;
+		storei R7 IO				;
+		.extern _getDivisors		; Escreva os Divisores não Obvios de A
+		storei R7 IO				;
+		add R1 R2					; Incrementa A
+		jump _while					;
+
+_endWhile:	ret						;
+
+one:		.data 2 1				;
+separator:	.data 2 0				;
