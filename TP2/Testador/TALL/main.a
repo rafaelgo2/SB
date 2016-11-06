@@ -2,6 +2,8 @@ loadi R0 IO; 0 1
 loadi R1 1; 2 3
 
 _this_OP1: subtract R0 R1; 4 5
+loadc R7 0; 06 07
+loadc R7 0; 08 09
 jmpp R0 _this_OP2; 6 7
 .extern _OP1; 8 9
 jump _end; 10 11
