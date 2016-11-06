@@ -1,0 +1,15 @@
+DEPTH = 256;
+WIDTH = 8;
+ADDRESS_RADIX = HEX;
+DATA_RADIX = BIN;
+CONTENT
+BEGIN
+
+00        :  10001000;              -- call _TESTE ;
+01        :  00000100;              -- 
+[02..03]:  00000000;              -- 
+04        :  00001000;              -- _TESTE: loadi R0 IO ;
+05        :  11111110;              -- 
+06        :  10100000;              -- ret  ;
+[07..FF]:  00000000;              -- 
+END;
