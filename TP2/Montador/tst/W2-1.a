@@ -1,25 +1,24 @@
-;   Fibonnaci iterative
+;	Fibonnaci iterative
 
-_moduleOne: loadi R7 one            ; R7 = 1 (constant)
+_moduleOne:	loadi R7 one 	; R7 = 1 (constant)
 
-    loadi R0 IO             ; input from user
+	loadi R0 IO				; Input from user
 
-    loadi R2 zero           ; init values
-    loadi R3 one            ;
-    loadi R1 zero           ;
+	loadi R1 zero 			; Init values
+	loadi R2 zero 			;
+	loadi R3 one 			;
 
-    jmpz R0 _finish         ; jump to finish and print 0 if input = 0
+	jmpz R0 _finish			; Jump to finish and print 0 if input = 0
 
-_loopFib:   move R4 R2        ; R4 = aux
-    add R2 R3               ; sum last number to current
-    move R3 R4              ; copy last from aux
+_loopFib:	move R4 R2		; R4 = aux
+	add R2 R3				; Sum last number to current
+	move R3 R4				; Copy last from aux
 
-    add R1 R7               ; count
-    sgt R5 R0 R1            ; check branch cond
+	add R1 R7				; Count
+	sgt R5 R0 R1			; Check branch cond
 
-    jmpp R5 _loopFib        ; branch to loop or not
+	jmpp R5 _loopFib		; Branch to loop or not
 
+_finish:	storei R2 IO	; Output fibonacci number
 
-_finish:    storei R2 IO	    ; output fibonacci number
-    
-    jump _moduleZero        ;
+	.extern _moduleZero		;

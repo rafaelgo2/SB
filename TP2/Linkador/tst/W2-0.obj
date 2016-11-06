@@ -1,0 +1,65 @@
+40 6 5 9 4
+_moduleZero 0
+_callOne 30
+_callTwo 32
+_callThree 34
+_callFour 36
+_exit 38
+zero 2 0 
+one 2 1 
+two 2 2 
+three 2 3 
+four 2 4 
+one 5
+_callOne 9
+two 11
+_callTwo 15
+three 17
+_callThree 21
+four 23
+_callFour 27
+_exit 29
+_moduleOne 31
+_moduleTwo 33
+_moduleThree 35
+_moduleFour 37
+8
+254
+8
+254
+9
+0
+0
+0
+65
+0
+10
+0
+0
+0
+66
+0
+11
+0
+0
+0
+67
+0
+12
+0
+0
+0
+68
+0
+56
+0
+136
+0
+136
+0
+136
+0
+136
+0
+0
+0

@@ -22,8 +22,8 @@ remake:
 	make all
 
 test:
-	./montador tst/W2-0.a tst/W2-0.mif
-	./montador tst/W2-1.a tst/W2-1.mif
-	./montador tst/W2-2.a tst/W2-2.mif
-	./montador tst/W2-3.a tst/W2-3.mif
-	./montador tst/W2-4.a tst/W2-4.mif
+	./montador tst/W2-0.a ../Linkador/tst/W2-0.obj
+	./montador tst/W2-1.a ../Linkador/tst/W2-1.obj
+	./montador tst/W2-2.a ../Linkador/tst/W2-2.obj
+	./montador tst/W2-3.a ../Linkador/tst/W2-3.obj
+	./montador tst/W2-4.a ../Linkador/tst/W2-4.obj

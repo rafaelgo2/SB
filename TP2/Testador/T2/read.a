@@ -1,0 +1,8 @@
+_initR: loadi R0 IO ;
+    move R1 R0 ;
+    subtract R1 R6 ;
+    jmpz R1 _endR ;
+    moveSp -2 ;
+    storeSp R0 0 ;
+    jump _initR ;
+_endR: ret ;

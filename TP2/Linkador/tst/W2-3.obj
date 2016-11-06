@@ -1,4 +1,4 @@
-52 4 0 4 0
+52 4 0 3 3
 _moduleThree 0
 _loopCalc 24
 _printSame 44
@@ -6,6 +6,8 @@ _printOne 48
 _printOne 9
 _printSame 13
 _loopCalc 37
+_moduleZero 43
+_moduleZero 47
 _moduleZero 51
 104
 0
@@ -49,13 +51,13 @@ _moduleZero 51
 2
 17
 254
-0
+136
 0
 17
 254
-0
+136
 0
 21
 254
-56
+136
 0

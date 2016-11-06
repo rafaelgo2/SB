@@ -1,27 +1,34 @@
-_moduleZero: loadi R0 IO
+_moduleZero:	loadi R0 IO	;
 
-    loadi R0 IO             ; input from user
+	loadi R0 IO				; Input from user
 
-    loadi R1 one            ;
-    sub R1 R1 R0            ;
-    jmpz R1 _moduleOne      ;
+	loadi R1 one 			;
+	sub R1 R1 R0			;
+	jmpz R1 _callOne		;
 
-    loadi R2 two            ;
-    sub R1 R2 R0            ;
-    jmpz R2 _moduleTwo      ;
+	loadi R2 two 			;
+	sub R1 R2 R0			;
+	jmpz R2 _callTwo		;
 
-    loadi R3 three          ;
-    sub R1 R3 R0            ;
-    jmpz R3 _moduleThree    ;
+	loadi R3 three 			;
+	sub R1 R3 R0			;
+	jmpz R3 _callThree		;
 
-    loadi R4 four           ;
-    sub R1 R4 R0            ;
-    jmpz R4 _moduleFour     ;
+	loadi R4 four 			;
+	sub R1 R4 R0			;
+	jmpz R4 _callFour		;
 
-    exit  		            ; stop
+	jump _exit				;
 
-zero:   .data 2 0           ; constant 0
-one:    .data 2 1	        ; constant 1
-two:    .data 2 2	        ; constant 2
-three:  .data 2 3           ; constant 3
-four:   .data 2 4           ; constant 4
+_callOne:	.extern _moduleOne		;
+_callTwo:	.extern _moduleTwo		;
+_callThree:	.extern _moduleThree	;
+_callFour:	.extern _moduleFour		;
+
+_exit:	exit 				; Stop
+
+zero:	.data 2 0			; Constant 0
+one:	.data 2 1			; Constant 1
+two:	.data 2 2			; Constant 2
+three:	.data 2 3			; Constant 3
+four:	.data 2 4			; Constant 4

@@ -47,6 +47,6 @@ public:
 	ObjectModule(char *fileName, int &pc, int index,
 		map<string, int> &labelMap, vector<Data> &data, char *mem);
 	void resolveDependencies(map<string, int> &labelMap, 
-		char *mem, int lastModuleIndex);
+		char *mem, int index, int lastModuleIndex);
 	unsigned long getMemorySize() { return memorySize; }
 };

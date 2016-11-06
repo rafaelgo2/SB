@@ -1,4 +1,4 @@
-loadc R6 -1 ;
+_OP3: loadc R6 -1 ;
 moveSp -2 ;
 storeSp R6 0 ;                  Marcador de Fundo de Pilha
 call _initR ;

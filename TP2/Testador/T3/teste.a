@@ -1,0 +1,9 @@
+_TESTE: loadi R0 IO;
+loadi R1 negOne;
+loadi R2 zero;
+storei R0 IO;
+storei R1 IO;
+storei R2 IO;
+ret;
+negOne: .data 2 -1;
+zero: .data 4 0; 
