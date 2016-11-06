@@ -1,10 +1,12 @@
-loadi R0 IO; 0 1
-loadi R1 1; 2 3
+loadi R0 IO; 00 01
+loadi R1 1; 02 03
 
-_this_OP1: subtract R0 R1; 4 5
-jmpp R0 _this_OP2; A B
-call _OP1; C D
-jump _end; E F
+_this_OP1: subtract R0 R1; 04 05
+loadc R7 0; 06 07
+loadc R7 0; 08 09
+jmpp R0 _this_OP2; 0A 0B
+call _OP1; 0C 0D
+jump _end; 0E 0F
 
 _this_OP2: subtract R0 R1; 10 11
 jmpp R0 _this_OP3; 12 13
@@ -32,77 +34,77 @@ storei R3 IO ; 36 37
 addi R1 1 ; 38 39
 seq R2 R0 R1 ; 3A 3B
 jmpz R2 _OP1new ; 3C 3D
-ret ;						calculados
+ret; 3E 3F
 
 
-_OP2: loadi R1 IO ;					R1 armazena A
-loadi R2 IO	;					R2 armazena B
-loadi R3 IO	;					R3 armazena C
-loadi R4 IO	;					R4 armazena x
-_OP2new: move R5 R4 ;				R5 calcula Ax^2
-multiply R5 R5 ;
-multiply R5 R1 ;
-multiply R4 R2 ;				R4 calcula Ax^2 + Bx + C
-add R4 R3 ;
-add R4 R5 ;
-moveSp -2 ;						Imprime e armazena o resultado da equacao
-storeSp R4 0 ;
-storei R4 IO ;
-addi R0 2 ;						R0 armazena o deslocamento do ponteiro da pilha
-loadi R4 IO ;					Recebe o novo x e, caso seja nao nulo, reinicia
-jmpp R4 _OP2new ;						o calculo
-jmpn R4 _OP2new ;
-jump _OP2order ;
-_OP2continueOrder: move R1 R0 ;	Em passadas posteriores a primeira, retorna o
-addi R1 -2 ;						ponteiro da pilha para a posicao do momento
-_OP2continueOrderLoop: moveSp -2 ;		em que a ordenacao comeca
-addi R1 -2 ;
-jmpp R1 _OP2continueOrderLoop ;	Enquanto sp nao estiver pronto, sp -= 2
-_OP2order: move R1 R0 ;			R1 indica a qntde de bytes da pilha percorridos
-loadc R2 1 ;					R2 indica se a pilha esta ordenada
-_OP2orderLoop: loadSp R3 0 ;		A pilha comeca a ser percorrida e ordenada, dois
-loadSp R4 2 ;						valores seguidos sao carregados da pilha
-clear R5 ;
-slt R5 R4 R3 ;
-jmpz R5 _OP2nextStage ;			Se R5 = 0, os valores carregados estao em ordem
-clear R2 ;						Caso contrario R2 eh alterado e os valores sao
-storeSp R3 2 ;						ordenados na pilha
-storeSp R4 0 ;
-_OP2nextStage: moveSp 2 ;			Sp eh preparado para proxima leitura
-addi R1 -2 ;
-loadc R3 3 ;
-clear R4 ;
-sgt R4 R1 R3 ;					Verifica se R1 <= 2, pois o loop deve parar no
-jmpp R4 _OP2orderLoop ;				no penultimo item da pilha
-jmpz R2 _OP2continueOrder ;		Se a pilha foi totalmente percorrida e ainda
-move R1 R0 ;						assim nao estiver em ordem, o loop continua
-_OP2resetSP: move R1 R0 ;			Retorna o ponteiro da pilha para a posicao do
-addi R1 -2 ;						momento em que a ordenacao comeca
-_OP2continueResetSp: moveSp -2 ;
-addi R1 -2 ;
-jmpp R1 _OP2continueResetSp ;
-move R1 R0 ;
-_OP2printSp: loadSp R2 0 ;			A pilha eh percorrida para impressao
-storei R2 IO ;
-moveSp 2 ;
-addi R1 -2 ;
-jmpp R1 _OP2printSp ;
-ret ;
+_OP2: loadi R1 IO ; 40 41
+loadi R2 IO	;	42 43
+loadi R3 IO	;   44 45
+loadi R4 IO	;	46 47
+_OP2new: move R5 R4 ; 48 49
+multiply R5 R5 ; 4A 4B
+multiply R5 R1 ; 4C 4D
+multiply R4 R2 ; 4E 4F
+add R4 R3 ; 50 51
+add R4 R5 ; 52 53
+moveSp -2 ;	54 55
+storeSp R4 0 ; 56 57
+storei R4 IO ;58 59
+addi R0 2 ; 5A 5B
+loadi R4 IO ; 5C 5D
+jmpp R4 _OP2new ; 5E 5F
+jmpn R4 _OP2new ; 60 61
+jump _OP2order ; 62 63
+_OP2continueOrder: move R1 R0 ; 64 65
+addi R1 -2 ; 66 67
+_OP2continueOrderLoop: moveSp -2 ; 68 69
+addi R1 -2 ; 6A 6B
+jmpp R1 _OP2continueOrderLoop ;	6C 6D
+_OP2order: move R1 R0 ;	6E 6F
+loadc R2 1 ;	70 71
+_OP2orderLoop: loadSp R3 0 ; 72 73
+loadSp R4 2 ; 74 75
+clear R5 ; 76 77
+slt R5 R4 R3 ; 78 79
+jmpz R5 _OP2nextStage ; 7A 7B 
+clear R2 ; 7C 7D
+storeSp R3 2 ;	7E 7F
+storeSp R4 0 ; 80 81
+_OP2nextStage: moveSp 2 ; 82 83
+addi R1 -2 ; 84 85
+loadc R3 3 ; 86 87
+clear R4 ; 88 89
+sgt R4 R1 R3 ; 8A 8B
+jmpp R4 _OP2orderLoop ; 8C 8D
+jmpz R2 _OP2continueOrder ;	8E 8F
+move R1 R0; 90 91
+_OP2resetSP: move R1 R0 ; 92 93
+addi R1 -2 ;			  94 95
+_OP2continueResetSp: moveSp -2 ; 96 97
+addi R1 -2 ; 98 99
+jmpp R1 _OP2continueResetSp ; 9A 9B
+move R1 R0 ; 9C 9D
+_OP2printSp: loadSp R2 0 ;	9E 9F
+storei R2 IO ; A0 A01
+moveSp 2 ; A2 A3
+addi R1 -2 ; A4 A5
+jmpp R1 _OP2printSp ; A6 A7
+ret ; A8 A9
 
-_OP3: loadi R2 IO;
-loadi R6 one;
-loadi R0 zero;
-loadi R1 one;
-loadi R3 zero;
-_OP3loop: jmpz R2 _OP3endLoop;
-	move R3 R1;
-	add R1 R0;
-	move R0 R3;
-	subtract R2 R6;
-jump _OP3loop;
-_OP3endLoop: storei R0 IO;
-ret;
+_OP3: loadi R2 IO; AA AB
+loadi R6 one; AC AD
+loadi R0 zero; AE AF
+loadi R1 one; B0 B1
+loadi R3 zero; B2 B3
+_OP3loop: jmpz R2 _OP3endLoop; B4 B5
+	move R3 R1; B6 B7
+	add R1 R0; B8 B9
+	move R0 R3; BA BB
+	subtract R2 R6; BC BD
+jump _OP3loop; BE BF
+_OP3endLoop: storei R0 IO; C0 C1
+ret; C2 C3
 
-ZERO: .data 2 0;
-zero: .data 2 0;
-one: .data 2 1; 
+ZERO: .data 2 0; C4 C5
+zero: .data 2 0; C6 C7
+one: .data 2 1;  C8 C9
