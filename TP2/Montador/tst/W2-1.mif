@@ -1,14 +1,14 @@
-28 2 2 6 0
+28 3 0 7 0
+_moduleOne 0
 _loopFib 12
 _finish 24
-one 2 1 
-zero 2 0 
 one 1
 zero 5
 one 7
 zero 9
 _finish 11
 _loopFib 23
+_moduleZero 27
 15
 0
 8
@@ -35,5 +35,5 @@ _loopFib 23
 0
 18
 254
-0
+56
 0

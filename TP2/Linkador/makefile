@@ -23,3 +23,6 @@ clean:
 remake:
 	make clean
 	make all
+
+test:
+	./linkador tst/W2.mif ../Montador/tst/W2-0.mif ../Montador/tst/W2-1.mif ../Montador/tst/W2-2.mif ../Montador/tst/W2-3.mif ../Montador/tst/W2-4.mif

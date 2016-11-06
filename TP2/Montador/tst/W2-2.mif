@@ -1,39 +1,33 @@
-28 2 2 6 0
-_loopFib 12
-_finish 24
-one 2 1 
-zero 2 0 
-one 1
-zero 5
-one 7
-zero 9
-_finish 11
-_loopFib 23
-15
+24 3 0 5 0
+_moduleTwo 0
+_loop 4
+_done 18
+zero 1
+zero 3
+_done 7
+_loop 17
+_moduleZero 23
+11
+0
+12
 0
 8
 254
-10
-0
-11
+72
 0
 9
-0
-64
-0
-84
-64
-26
-96
-83
-128
-25
-224
-197
-4
-213
-0
-18
 254
+28
+32
+40
+32
+27
 0
+56
+0
+51
+128
+19
+254
+56
 0
