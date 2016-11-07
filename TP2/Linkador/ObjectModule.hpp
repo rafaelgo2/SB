@@ -13,7 +13,7 @@ enum Type{
 /* .data instruction struct */
 typedef struct{
 	string name; // label
-    int numBytes; // size * 8
+    int numBytes;
     long long int value;
 } Data;
 
