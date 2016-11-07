@@ -1,0 +1,22 @@
+_getDivisors: move R3 R1;
+loadi R4 one;
+add R4 R4;
+_while: slt R5 R4 R3;
+	jmpz R5 _endWhile; Enquanto R4 < R3
+	move R6 R3;
+	divide R6 R4
+	multiply R6 R4;
+        ;storei R6 IO;
+	subtract R6 R3;
+        ;storei R6 IO;
+	jmpz R6 _isDivisor;
+
+	add R4 R2;
+	jump _while;
+
+	_isDivisor: storei R4 IO;
+	add R4 R2;
+	jump _while;
+_endWhile: ret;
+
+one: .data 2 1;
