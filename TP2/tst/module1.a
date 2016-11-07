@@ -1,0 +1,17 @@
+_maior:	sgt R0 R1 R2				;
+		jmpz R0 _maiorB				;
+
+		sgt R0 R1 R3				;
+		jmpz R0 _maiorB				;
+
+		storei R1 IO				;
+		ret							;
+
+	_maiorB:	sgt R0 R2 R3		;
+				jmpz R0 _maiorC		;
+
+				storei R2 IO		;
+				ret					;
+
+	_maiorC:	storei R3 IO		;
+				ret					;

@@ -1,0 +1,43 @@
+	loadi R0 IO						; Recebe OP 
+	loadi R1 IO						; Recebe A
+	loadi R2 IO						; Recebe B
+	loadi R3 IO						; Recebe C
+
+	loadc R4 1	 					; Verifica se OP é igual a 1
+	seq R4 R4 R0					;
+	jmpp R4 _callMaior				;
+
+	loadc R4 2	 					; Verifica se OP é igual a 2
+	seq R4 R4 R0					;
+	jmpz R4 _callMenor				;
+
+	loadc R4 3	 					; Verifica se OP é igual a 3
+	seq R4 R4 R0					;
+	jmpz R4 _callSoma				;
+
+	loadc R4 4	 					; Verifica se OP é igual a 4
+	seq R4 R4 R0					;
+	jmpz R4 _callProduto			;
+
+	loadc R4 5	 					; Verifica se OP é igual a 5
+	seq R4 R4 R0					;
+	jmpz R4 _callMedia				;
+
+	jump _fim						;
+
+_callMaior:		.extern _maior		;
+				jump _fim			;
+
+_callMenor:		.extern _menor		;
+				jump _fim			;
+
+_callSoma:		.extern _soma		;
+				jump _fim			;
+
+_callProduto:	.extern _produto	;
+				jump _fim			;
+
+_callMedia:		.extern _media		;
+				jump _fim			;
+
+_fim:	exit						;

@@ -1,0 +1,17 @@
+_menor:	slt R0 R1 R2				;
+		jmpz R0 _menorB				;
+
+		slt R0 R1 R3				;
+		jmpz R0 _menorB				;
+
+		storei R1 IO				;
+		ret							;
+
+	_menorB:	slt R0 R2 R3		;
+				jmpz R0 _menorC		;
+
+				storei R2 IO		;
+				ret					;
+
+	_menorC:	storei R3 IO		;
+				ret					;
