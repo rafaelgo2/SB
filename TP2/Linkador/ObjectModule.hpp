@@ -4,27 +4,30 @@
 
 using namespace std;
 
+/* consts */
 enum Type{
 	IN,
 	OUT
 };
 
+/* .data instruction struct */
 typedef struct{
-    string name;
-    int numBytes;
+	string name; // label
+    int numBytes; // size * 8
     long long int value;
 } Data;
 
+/* dependency struct */
 typedef struct{
 	string s;	
 	int pc;
 } Dependency;
 
+/* label struct */
 typedef struct{
     string name;
-    int pc;
+    int pc; // position that label was get
 } Label;
-
 
 typedef struct{
 	int memSize;
