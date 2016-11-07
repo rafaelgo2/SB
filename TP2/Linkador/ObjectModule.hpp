@@ -44,9 +44,13 @@ private:
 	int startPosition;
 	char *fileName;
 public:
+
+	/* 	Object Module Constructor */
 	ObjectModule(char *fileName, int &pc, int index,
 		map<string, int> &labelMap, vector<Data> &data, char *mem);
+
+	/* Resolve each dependency (in or out)
+  	 * then set the 'mem' array with their value */
 	void resolveDependencies(map<string, int> &labelMap, 
 		char *mem, int index, int lastModuleIndex);
-	unsigned long getMemorySize() { return memorySize; }
 };
