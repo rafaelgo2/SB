@@ -5,15 +5,15 @@ Pair newPair(char i, char j){
 }
 
 char getI(Pair p){
-    return p/M;
+	return p/M;
 }
 
 char getJ(Pair p){
-    return p%M;
+	return p%M;
 }
 
 Pair increment(Pair p, char i, char j){
-    char sumI = (getI(p) + i + N) % N;
-    char sumJ = (getJ(p) + j + M) % M;
-    return newPair(sumI, sumJ);
+	char sumI = (getI(p) + i + N) % N; //Ajusta os limites da tela
+	char sumJ = (getJ(p) + j + M) % M; //E movimenta um ponto
+	return newPair(sumI, sumJ);
 }
