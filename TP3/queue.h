@@ -84,7 +84,7 @@ extern "C" {
 // Struct Queue
 // Define a fila com parametros úteis e seu array de Pares
 typedef struct{
-	int capacity; / /Capacidade da fila
+	int capacity; //Capacidade da fila
 	int size; // Tamanho da fila
 	int head; // Começo
 	int tail; // Fim
