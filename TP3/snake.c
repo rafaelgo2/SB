@@ -14,13 +14,13 @@ int isFood(Snake *s, Pair p){
 }
 
 void startSnake(Snake *s){
-    srand(getRandon());
+	srand(getRandon()); //getRandon retorna o seed de acordo com o horário da placa
 	startQueue(&(s->q));
-    int i, j;
-    for (i = 0; i < N; i++)
-        for (j = 0; j < M; j++)
-            s->field[i][j] = 0;
-	s->fail = 0;
+	int i, j;
+	for (i = 0; i < N; i++)
+		for (j = 0; j < M; j++)
+			s->field[i][j] = 0;
+	s->fail = 0; //Sinaliza o estado do jogo. 1 se a cobra se intersectar
 	set(s, newPair(0, 0));
 	makeFood(s);
 }
@@ -44,63 +44,62 @@ void print(Snake *s, char field[N][M+1]){
 				} break;
 				case 1:{
 					if (head == newPair(i, j))
-                        field[i][j] = '*';
+						field[i][j] = '*'; //Destaca a cabeça da cobra
 					else
-                        field[i][j] = '+';
+						field[i][j] = '+'; //O corpo da cobra
 				} break;
 				case 2:{
 					field[i][j] = 'x';
 				} break;
 			}
 		}
-        field[i][M] = 0;
+		field[i][M] = 0;
 	}
 }
 
 void move(Snake *s, char direction){
 	Pair head = front(&(s->q));
-    Pair newPosition;
+	Pair newPosition;
 	switch (direction){
 		case 0:{
-            newPosition = increment(newPosition, 0, -1);
+			newPosition = increment(newPosition, 0, -1);
 		} break;
 		case 1:{
-            newPosition = increment(newPosition, 1, 0);
+			newPosition = increment(newPosition, 1, 0);
 		} break;
 		case 2:{
-            newPosition = increment(newPosition, 0, 1);
+			newPosition = increment(newPosition, 0, 1);
 		} break;
-        default:{
-            newPosition = head;        
-        } break;
+		default:{
+			newPosition = head;        
+		} break;
 	}
 	Pair lastPosition = back(&(s->q));
-	if (isSet(s, newPosition) && (newPosition != lastPosition)){
+	if (isSet(s, newPosition) && (newPosition != lastPosition))
 		s->fail = 1;
-	}
 	else{
 		if (!isFood(s, newPosition)){
 			pop(&(s->q));
 			s->field[getI(lastPosition)][getJ(lastPosition)] = 0;
-            set(s, newPosition);
+			set(s, newPosition);
 		}
 		else{
-            set(s, newPosition);
-            if (!won(s))
-                makeFood(s);
+			set(s, newPosition);
+			if (!won(s))
+				makeFood(s);
 		}
 	}
 }
 
 void makeFood(Snake *s){
-    int i, j;
-    do{
-        i = rand() % N;
-        j = rand() % M;  
-    }while(isSet(s, newPair(i, j)));
+	int i, j;
+	do{
+		i = rand() % N; //Gerados aleatoriamente
+		j = rand() % M;  //com a seed baseada no horário da placa
+	}while(isSet(s, newPair(i, j)));
 	s->field[i][j] = 2;
 }
 
 int points(Snake *s){
-    return s->q.size;
+	return s->q.size;
 }
