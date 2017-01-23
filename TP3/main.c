@@ -19,74 +19,74 @@
 #include "snake.h"
 
 void main(){
-    char message[16] = "   pontos! RB1";
-
-    
-	TRISC=0x01;
+	char message[16] = "   pontos! RB1"; //Mensagem de feedback de vitória
+	
+	TRISC=0x01; //Configurações da board e processor
 	TRISD=0x00;
 	TRISE=0x00;
-    
-  
-    
-    ADCON1=0x0F;
-    TRISA|=0x20;
-
-    TRISB=0x3F;
-    
+	ADCON1=0x0F;
+	TRISA|=0x20;
+	TRISB=0x3F;
+	
 	lcd_init();
-    lcd_cmd(L_CLR);
-    lcd_cmd(L_L1);
-    lcd_str("Pressione RB1");
-    lcd_cmd(L_L2);
-    lcd_str("Para comecar!");
-    while(PORTBbits.RB1);
-    int direction;
-    char field[N][M+1];
-    Snake s;
-    while (1){    
-        startSnake(&s);
-        print(&s, field);
-        lcd_cmd(L_CLR);
-        lcd_cmd(L_L1);
-        lcd_str(field[0]);
-        lcd_cmd(L_L2);
-        lcd_str(field[1]);
-        while(!end(&s)){
-            while((direction = (PORTBbits.RB0 << 0) + (PORTBbits.RB1 << 1) + (PORTBbits.RB2 << 2))
-                    ==  ((1 << 3) - 1));
-            
-            if (direction == 6) //110
-                direction = 0;
-            else if (direction == 5) //101
-                direction = 1;
-            else if (direction == 3) //011
-                direction = 2;
-            
-            move(&s, direction);
-            print(&s, field);
-            lcd_cmd(L_CLR);
-            lcd_cmd(L_L1);
-            lcd_str(field[0]);
-            lcd_cmd(L_L2);
-            lcd_str(field[1]);
-        }
-        if (won(&s)){
-            lcd_cmd(L_CLR);
-            lcd_cmd(L_L1);
-            lcd_str("Parabens!");
-            lcd_cmd(L_L2);
-            lcd_str("Venceu. RB1");
-        }
-        else{
-            lcd_cmd(L_CLR);
-            lcd_cmd(L_L1);
-            int pts = points(&s);
-            message[0] = '0' + pts/10;
-            message[1] = '0' + pts%10;
-            lcd_str(message);
-            lcd_cmd(L_L2);
-            lcd_str("Tente novamente");
-        }
-        while(PORTBbits.RB1);
-    }
+	lcd_cmd(L_CLR);
+	lcd_cmd(L_L1);
+	lcd_str("Pressione RB1");
+	lcd_cmd(L_L2);
+	lcd_str("Para comecar!");
+	while(PORTBbits.RB1); //Espera até o jogador iniciar, apertando RB1
+	int direction;
+	char field[N][M+1];
+	Snake s;
+	while (1){
+		startSnake(&s);
+		print(&s, field); //Transforma o estado do jogo em duas frases
+		lcd_cmd(L_CLR);		// a serem exibidas no lcd
+		lcd_cmd(L_L1);
+		lcd_str(field[0]);
+		lcd_cmd(L_L2);
+		lcd_str(field[1]);
+		while(!end(&s)){ //Espera nova movimentações até o jogo terminar
+			while((direction = (PORTBbits.RB0 << 0) + (PORTBbits.RB1 << 1) + (PORTBbits.RB2 << 2))
+			      ==  ((1 << 3) - 1)); // 1000 - 1 == 111
+			/*
+			* O while continua até um dos sinais ser negado
+			* Quando um dos botões for acionado, um número único 
+			* é gerado e armazenado em direction, tornando possível
+			* reconhecer o movimento escolhido pelo jogador.
+			* Neste momento, o while termina.
+			*/            
+			if (direction == 6) //110 Bit do RB0 está zerado
+				direction = 0;
+			else if (direction == 5) //101 Bit do RB1 está zerado
+				direction = 1;
+			else if (direction == 3) //011 Bit do RB2 está zerado
+				direction = 2;
+			move(&s, direction); //Realiza a movimentação da cobra de acordo com o botão
+			print(&s, field);	//precionado. E atualiza a tela para o jogador.
+			lcd_cmd(L_CLR);
+			lcd_cmd(L_L1);
+			lcd_str(field[0]);
+			lcd_cmd(L_L2);
+			lcd_str(field[1]);
+		}
+		if (won(&s)){	//Quando a cobra preencher todo o tabuleiro
+			lcd_cmd(L_CLR);
+			lcd_cmd(L_L1);
+			lcd_str("Parabens!");
+			lcd_cmd(L_L2);
+			lcd_str("Venceu. RB1");
+		}
+		else{		//Quando a cobra se intersectar
+			lcd_cmd(L_CLR);
+			lcd_cmd(L_L1);
+			int pts = points(&s); //Recebe os pontos (Quantidade de comidas) recolhidos
+			message[0] = '0' + pts/10; //Fatorando os pontos na base 10 para exibir no LCD
+			message[1] = '0' + pts%10; //A quantidade máxima de pontos é 32. (Apenas 2 dígitos)
+			lcd_str(message);
+			lcd_cmd(L_L2);
+			lcd_str("Tente novamente");
+		}
+		while(PORTBbits.RB1); //Aguarda comando do usuário para reiniciar o jogo
+	}
 }
