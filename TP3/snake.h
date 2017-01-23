@@ -83,32 +83,43 @@ extern "C" {
 #include "rtc.h"
 #include <stdlib.h>
 
+//Struct Snake
 typedef struct{
-	char field[N][M];
-	Queue q;
-	char fail;
+	char field[N][M]; //vetor campo
+	Queue q; // fila (corpo da cobra)
+	char fail; // cobra viva ou morta
 }Snake;
 
+//Inicia a cobra em uma posição Pair do mapa
 void set(Snake *s, Pair p);
 
+//Retorna 1 se Snake esta ocupando aquela posição do campo
 int isSet(Snake *s, Pair p);
 
+// Retorna 1 se uma comida está ocupando aquela posição do campo
 int isFood(Snake *s, Pair p);
 
+//Construtor da Snake
 void startSnake(Snake *s);
 
+//Se a cobra atingir a capacidade, o jogador é vitorioso
 int won(Snake *s);
 
+//Termina se o jogador morreu ou ganhou
 int end(Snake *s);
 
+//Função que seta os desenhos mostrados no campo
 void print(Snake *s, char field[N][M]);
 
 void fixPosition(Pair *position);
 
+//Movimenta a cobra dependendo da sua direção
 void move(Snake *s, char direction);
 
+//Cria a comida de maneira randomica no campo
 void makeFood(Snake *s);
 
+//Retorna o tamanho da Queue (pontos)
 int points(Snake *s);
 
 #endif // SNAKE_H_INCLUDED
