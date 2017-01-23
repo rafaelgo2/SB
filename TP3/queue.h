@@ -81,22 +81,29 @@ extern "C" {
 
 #include "pair.h"
 
+// Struct Queue
+// Define a fila com parametros úteis e seu array de Pares
 typedef struct{
-	int capacity;
-	int size;
-	int head;
-	int tail;
-	Pair v[SIZEQUEUE]; 
+	int capacity; / /Capacidade da fila
+	int size; // Tamanho da fila
+	int head; // Começo
+	int tail; // Fim
+	Pair v[SIZEQUEUE];  // Array de pares
 } Queue;
 
+// Construtor do Struct Queue
 void startQueue(Queue *q);
 
+//Adiciona um novo par à fila
 void push(Queue *q, Pair x);
 
+//Retorna o par da frente
 Pair front(Queue *q);
 
+//Retorna o par de trás da fila
 Pair back(Queue *q);
 
+//Remove da fila
 void pop(Queue *q);
 
 #endif // QUEUE_H_INCLUDED
