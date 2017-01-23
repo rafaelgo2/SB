@@ -84,14 +84,19 @@ extern "C" {
 
 #define SIZEQUEUE 33 // 2 * 16 + 1
 
+//Struct Pair
 typedef char Pair;
 
+// construtor objeto Pair
 Pair newPair(char i, char j);
 
+// retorna posição I
 char getI(Pair p);
 
+// retorna posição J
 char getJ(Pair p);
 
+//Modifica os valores do Pair (posição)
 Pair increment(Pair p, char i, char j);
 
 #endif // PAIR_H_INCLUDED
