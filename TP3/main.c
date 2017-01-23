@@ -28,21 +28,21 @@ void main(){
 	TRISA|=0x20;
 	TRISB=0x3F;
 	
-	lcd_init();
-	lcd_cmd(L_CLR);
-	lcd_cmd(L_L1);
-	lcd_str("Pressione RB1");
-	lcd_cmd(L_L2);
-	lcd_str("Para comecar!");
+	lcd_init(); //Inicia o LCD
+	lcd_cmd(L_CLR); //Limpa o LCD
+	lcd_cmd(L_L1); //Muda para a primeira linha
+	lcd_str("Pressione RB1"); //Escreve no LCD
+	lcd_cmd(L_L2);//Muda para a segunda linha
+	lcd_str("Para comecar!"); //Escreve no LCD
 	while(PORTBbits.RB1); //Espera até o jogador iniciar, apertando RB1
-	int direction;
-	char field[N][M+1];
+	int direction; // Direção da Snake
+	char field[N][M+1]; // Matriz com cada posição do display
 	Snake s;
 	while (1){
 		startSnake(&s);
 		print(&s, field); //Transforma o estado do jogo em duas frases
 		lcd_cmd(L_CLR);		// a serem exibidas no lcd
-		lcd_cmd(L_L1);
+		lcd_cmd(L_L1); 
 		lcd_str(field[0]);
 		lcd_cmd(L_L2);
 		lcd_str(field[1]);
