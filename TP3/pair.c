@@ -1,27 +1,19 @@
 #include "pair.h"
 
-void fillV(int n, int v[n], int x){
-	int i;
-	for (i = 0; i < n; i++)
-		v[i] = 0;
+Pair newPair(char i, char j){
+	return i*M + j;
 }
 
-void fillM(int n, int m, int v[n][m], int x){
-	int i;
-	for (i = 0; i < n; i++)
-		fillV(m, v[i], x);
+char getI(Pair p){
+    return p/M;
 }
 
-Pair newPair(int i, int j){
-	Pair p = {i, j};
-	return p;
+char getJ(Pair p){
+    return p%M;
 }
 
-Pair sumPair(Pair p1, Pair p2){
-	Pair p = {p1.i + p2.i, p1.j + p2.j};
-	return p;
-}
-
-int equals(Pair p1, Pair p2){
-	return (p1.i == p2.i) && (p1.j == p2.j);
+Pair increment(Pair p, char i, char j){
+    char sumI = (getI(p) + i + N) % N;
+    char sumJ = (getJ(p) + j + M) % M;
+    return newPair(sumI, sumJ);
 }

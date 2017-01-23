@@ -23,11 +23,6 @@ Pair back(Queue *q){
 }
 
 void pop(Queue *q){
-	int pos = q->tail % q->capacity;
 	q->tail = (q->tail + 1) % q->capacity;
 	q->size--;
-}
-
-int empty(Queue *q){
-	return q->size == 0;
 }

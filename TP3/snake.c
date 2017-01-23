@@ -1,24 +1,28 @@
 #include "snake.h"
 
 void set(Snake *s, Pair p){
-	s->field[p.i][p.j] = 1;
+	s->field[getI(p)][getJ(p)] = 1;
 	push(&s->q, p);
 }
 
 int isSet(Snake *s, Pair p){
-	return s->field[p.i][p.j] == 1;
+	return s->field[getI(p)][getJ(p)] == 1;
 }
 
 int isFood(Snake *s, Pair p){
-	return s->field[p.i][p.j] == 2;
+	return s->field[getI(p)][getJ(p)] == 2;
 }
 
 void startSnake(Snake *s){
+    srand(getRandon());
 	startQueue(&(s->q));
-	fillM(N, M, s->field, 0);
+    int i, j;
+    for (i = 0; i < N; i++)
+        for (j = 0; j < M; j++)
+            s->field[i][j] = 0;
 	s->fail = 0;
 	set(s, newPair(0, 0));
-	makeFood(s, rand(), rand());
+	makeFood(s);
 }
 
 int won(Snake *s){
@@ -29,79 +33,74 @@ int end(Snake *s){
 	return won(s) || s->fail;
 }
 
-void print(Snake *s){
+void print(Snake *s, char field[N][M+1]){
 	Pair head = front(&(s->q));
 	int i, j;
 	for (i = 0; i < N; i++){
 		for (j = 0; j < M; j++){
 			switch (s->field[i][j]){
 				case 0:{
-					printf("%c ", '-');
+					field[i][j] = ' ';
 				} break;
 				case 1:{
-					if (equals(head, newPair(i, j)))
-						printf("%c ", 'x');
+					if (head == newPair(i, j))
+                        field[i][j] = '*';
 					else
-						printf("%c ", '+');
+                        field[i][j] = '+';
 				} break;
 				case 2:{
-					printf("%c ", '*');
+					field[i][j] = 'x';
 				} break;
 			}
 		}
-		printf("\n");
+        field[i][M] = 0;
 	}
-}
-
-void fixPosition(Pair *position){
-	position->i = (position->i + N) % N;
-	position->j = (position->j + N) % N;
 }
 
 void move(Snake *s, char direction){
 	Pair head = front(&(s->q));
-	Pair increment;
+    Pair newPosition;
 	switch (direction){
-		case 'A':{
-			increment = newPair(0, -1);
+		case 0:{
+            newPosition = increment(newPosition, 0, -1);
 		} break;
-		case 'W':{
-			increment = newPair(-1, 0);
+		case 1:{
+            newPosition = increment(newPosition, 1, 0);
 		} break;
-		case 'S':{
-			increment = newPair(1, 0);
+		case 2:{
+            newPosition = increment(newPosition, 0, 1);
 		} break;
-		case 'D':{
-			increment = newPair(0, 1);
-		} break;
-		default:{
-			increment = newPair(0, 0);
-		} break;
+        default:{
+            newPosition = head;        
+        } break;
 	}
-	Pair newPosition = sumPair(head, increment);
-	fixPosition(&newPosition);
 	Pair lastPosition = back(&(s->q));
-	if (isSet(s, newPosition) && !equals(newPosition, lastPosition)){
+	if (isSet(s, newPosition) && (newPosition != lastPosition)){
 		s->fail = 1;
 	}
 	else{
 		if (!isFood(s, newPosition)){
 			pop(&(s->q));
-			s->field[lastPosition.i][lastPosition.j] = 0;
+			s->field[getI(lastPosition)][getJ(lastPosition)] = 0;
+            set(s, newPosition);
 		}
 		else{
-			makeFood(s, rand(), rand());
+            set(s, newPosition);
+            if (!won(s))
+                makeFood(s);
 		}
-		set(s, newPosition);
 	}
 }
 
-void makeFood(Snake *s, int i, int j){
-	i %= N;
-	j %= M;
-	while (isSet(s, newPair(i, j))){
-		i = (i +((j+1) == M)) % N;
-		j = (j+1) % M;
-	}
+void makeFood(Snake *s){
+    int i, j;
+    do{
+        i = rand() % N;
+        j = rand() % M;  
+    }while(isSet(s, newPair(i, j)));
 	s->field[i][j] = 2;
+}
+
+int points(Snake *s){
+    return s->q.size;
 }
